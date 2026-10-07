@@ -36,9 +36,26 @@ const MicBox = ({ label, sub, level, muted, onClick, dim }: { label: string; sub
         onClick && 'hover:bg-muted/70 cursor-pointer',
       )}
     >
+      {/* Voice-reactive circle: expands while speaking, shrinks when quiet */}
       <span
-        className="absolute rounded-full bg-primary/20 transition-all duration-100"
-        style={{ width: `${40 + level * 60}%`, height: `${40 + level * 60}%` }}
+        aria-hidden
+        className={cn(
+          'absolute rounded-full border-2 transition-all duration-150 ease-out',
+          level > 0.08
+            ? 'border-primary/70 bg-primary/25 shadow-glow'
+            : 'border-primary/25 bg-primary/10',
+        )}
+        style={{
+          width: `${38 + level * 62}%`,
+          height: `${38 + level * 62}%`,
+          transform: `scale(${1 + level * 0.25})`,
+          opacity: 0.5 + Math.min(level * 1.5, 0.5),
+        }}
+      />
+      <span
+        aria-hidden
+        className="absolute rounded-full bg-primary/10 transition-all duration-300"
+        style={{ width: `${30 + level * 40}%`, height: `${30 + level * 40}%` }}
       />
       {muted ? <MicOff className="relative w-10 h-10 text-destructive" /> : <Mic className="relative w-10 h-10 text-primary" />}
     </button>

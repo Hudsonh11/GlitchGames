@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Send, Bot, User, Sparkles, Zap, Bug } from 'lucide-react';
+import { X, Send, Bot, User, Sparkles, Zap, Bug, Headphones, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import BugReportModal from '@/components/BugReportModal';
+import UserSupportCall from '@/components/support/UserSupportCall';
 
 type Message = {
   role: 'user' | 'assistant';
