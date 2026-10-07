@@ -12,6 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useGame } from '@/contexts/GameContext';
 import { useToast } from '@/hooks/use-toast';
 import UltraCard from '@/components/UltraCard';
+import AdminSupportAgents from '@/components/AdminSupportAgents';
 
 interface AuditEntry {
   id: string;
@@ -288,6 +289,8 @@ const AdminPower: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Support Agents — agents get the Support tab and receive live calls */}
+      <AdminSupportAgents />
       {/* Self Grant Currency */}
       <UltraCard variant="premium" glow className="p-5">
         <div className="flex items-center gap-2 mb-3">
