@@ -17,6 +17,7 @@ const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/support-chat
 const SupportBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isBugReportOpen, setIsBugReportOpen] = useState(false);
+  const [mode, setMode] = useState<'chat' | 'support'>('chat');
   const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', content: "Hey there! 🎮 I'm Pixel, your gaming assistant. Need help with a game, your account, or just want to chat? I'm here for you!" }
   ]);
