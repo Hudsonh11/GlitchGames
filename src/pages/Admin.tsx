@@ -27,7 +27,6 @@ import AdminPower from '@/components/AdminPower';
 import AdminMaintenance from '@/components/AdminMaintenance';
 import AdminGameConfig from '@/components/AdminGameConfig';
 import AdminBulkActions from '@/components/AdminBulkActions';
-import AdminSupportAgents from '@/components/AdminSupportAgents';
 import { useGame } from '@/contexts/GameContext';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
