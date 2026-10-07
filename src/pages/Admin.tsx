@@ -245,14 +245,10 @@ const Admin: React.FC = () => {
               <TabsTrigger value="logs" className="gap-1.5 text-xs">
                 <Activity className="w-3.5 h-3.5" /> Logs
               </TabsTrigger>
-              <TabsTrigger value="support" className="gap-1.5 text-xs">
-                <Users className="w-3.5 h-3.5" /> Support Agents
-              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="gameconfig"><AdminGameConfig /></TabsContent>
             <TabsContent value="bulk"><AdminBulkActions /></TabsContent>
-            <TabsContent value="support"><AdminSupportAgents /></TabsContent>
             <TabsContent value="maintenance"><AdminMaintenance /></TabsContent>
 
             {/* ═══ Power Tab ═══ */}
