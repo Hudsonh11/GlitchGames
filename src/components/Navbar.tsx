@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Gamepad2, User, Trophy, Gift, Settings, Menu, X, Crown, LogOut, Flame, Sparkles, ChevronDown, Zap, Star, TrendingUp, Bell, Users } from 'lucide-react';
+import { Gamepad2, User, Trophy, Gift, Settings, Menu, X, Crown, LogOut, Flame, Sparkles, ChevronDown, Zap, Star, TrendingUp, Bell, Users, Headphones } from 'lucide-react';
+import { useIsSupportAgent } from '@/lib/supportCall';
 import { Button } from '@/components/ui/button';
 import { useGame } from '@/contexts/GameContext';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -28,11 +29,14 @@ const Navbar: React.FC = () => {
     { id: '2', type: 'system' as const, title: 'Welcome to Glitch Games!', message: 'Explore 50+ games and earn rewards.', timestamp: new Date(Date.now() - 3600000), read: true },
   ]);
 
+  const isAgent = useIsSupportAgent(user?.id);
+
   const navItems = [
     { path: '/', label: 'Games', icon: Gamepad2 },
     { path: '/leaderboard', label: 'Leaderboard', icon: Trophy },
     { path: '/social', label: 'Social', icon: Users },
     { path: '/rewards', label: 'Rewards', icon: Gift },
+    ...(isAgent ? [{ path: '/support', label: 'Support', icon: Headphones }] : []),
   ];
 
   const isActive = (path: string) => location.pathname === path;
