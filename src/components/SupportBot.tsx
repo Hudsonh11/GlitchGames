@@ -254,6 +254,13 @@ const SupportBot = () => {
 
           {/* Input with enhanced design */}
           <div className="border-t border-border/50 p-4 rounded-b-3xl bg-muted/30">
+            <button
+              onClick={() => setMode('support')}
+              className="w-full mb-3 h-11 rounded-xl bg-success/15 hover:bg-success/25 border border-success/50 text-success font-semibold text-sm flex items-center justify-center gap-2 transition-all hover:shadow-glow"
+            >
+              <Headphones className="w-4 h-4" />
+              Talk to Live Support
+            </button>
             <div className="flex gap-3">
               <Input
                 value={input}
@@ -323,13 +330,6 @@ const SupportBot = () => {
               >
                 <Bug className="w-3 h-3" />
                 Report Bug
-              </button>
-              <button
-                onClick={() => setMode('support')}
-                className="text-xs px-3 py-1.5 rounded-full bg-success/20 hover:bg-success/30 text-success transition-colors border border-success/50 flex items-center gap-1"
-              >
-                <Headphones className="w-3 h-3" />
-                Support
               </button>
             </div>
           </div>
