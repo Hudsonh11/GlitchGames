@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Send, Bot, User, Sparkles, Zap, Bug } from 'lucide-react';
+import { X, Send, Bot, User, Sparkles, Zap, Bug, Headphones, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import BugReportModal from '@/components/BugReportModal';
+import UserSupportCall from '@/components/support/UserSupportCall';
 
 type Message = {
   role: 'user' | 'assistant';
@@ -16,6 +17,7 @@ const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/support-chat
 const SupportBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isBugReportOpen, setIsBugReportOpen] = useState(false);
+  const [mode, setMode] = useState<'chat' | 'support'>('chat');
   const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', content: "Hey there! 🎮 I'm Pixel, your gaming assistant. Need help with a game, your account, or just want to chat? I'm here for you!" }
   ]);
@@ -159,18 +161,30 @@ const SupportBot = () => {
             <div className="relative flex items-center gap-4 px-5 py-4">
               <div className="relative">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-background/20 backdrop-blur-sm border border-white/20">
-                  <Bot className="h-7 w-7 text-white" />
+                  {mode === 'support' ? <Headphones className="h-7 w-7 text-white" /> : <Bot className="h-7 w-7 text-white" />}
                 </div>
                 <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-success border-2 border-white animate-pulse" />
               </div>
               
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-display font-bold text-lg text-white">Pixel</h3>
+                  <h3 className="font-display font-bold text-lg text-white">{mode === 'support' ? 'Support Call' : 'Pixel'}</h3>
                   <Zap className="h-4 w-4 text-warning animate-pulse" />
                 </div>
-                <p className="text-xs text-white/80">AI Gaming Assistant • Online</p>
+                <p className="text-xs text-white/80">{mode === 'support' ? 'Live voice support' : 'AI Gaming Assistant • Online'}</p>
               </div>
+
+              {mode === 'support' && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setMode('chat')}
+                  aria-label="Back to Pixel chat"
+                  className="h-9 w-9 rounded-xl bg-white/10 hover:bg-white/20 text-white"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+              )}
               
               <Button 
                 variant="ghost" 
@@ -183,6 +197,10 @@ const SupportBot = () => {
             </div>
           </div>
 
+          {mode === 'support' ? (
+            <UserSupportCall onExit={() => setMode('chat')} />
+          ) : (
+          <>
           {/* Messages */}
           <ScrollArea className="h-[380px] p-4" ref={scrollRef}>
             <div className="flex flex-col gap-4">
@@ -306,8 +324,17 @@ const SupportBot = () => {
                 <Bug className="w-3 h-3" />
                 Report Bug
               </button>
+              <button
+                onClick={() => setMode('support')}
+                className="text-xs px-3 py-1.5 rounded-full bg-success/20 hover:bg-success/30 text-success transition-colors border border-success/50 flex items-center gap-1"
+              >
+                <Headphones className="w-3 h-3" />
+                Support
+              </button>
             </div>
           </div>
+          </>
+          )}
         </div>
       )}
       
