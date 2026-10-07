@@ -197,6 +197,10 @@ const SupportBot = () => {
             </div>
           </div>
 
+          {mode === 'support' ? (
+            <UserSupportCall onExit={() => setMode('chat')} />
+          ) : (
+          <>
           {/* Messages */}
           <ScrollArea className="h-[380px] p-4" ref={scrollRef}>
             <div className="flex flex-col gap-4">
