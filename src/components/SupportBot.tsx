@@ -161,18 +161,30 @@ const SupportBot = () => {
             <div className="relative flex items-center gap-4 px-5 py-4">
               <div className="relative">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-background/20 backdrop-blur-sm border border-white/20">
-                  <Bot className="h-7 w-7 text-white" />
+                  {mode === 'support' ? <Headphones className="h-7 w-7 text-white" /> : <Bot className="h-7 w-7 text-white" />}
                 </div>
                 <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-success border-2 border-white animate-pulse" />
               </div>
               
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-display font-bold text-lg text-white">Pixel</h3>
+                  <h3 className="font-display font-bold text-lg text-white">{mode === 'support' ? 'Support Call' : 'Pixel'}</h3>
                   <Zap className="h-4 w-4 text-warning animate-pulse" />
                 </div>
-                <p className="text-xs text-white/80">AI Gaming Assistant • Online</p>
+                <p className="text-xs text-white/80">{mode === 'support' ? 'Live voice support' : 'AI Gaming Assistant • Online'}</p>
               </div>
+
+              {mode === 'support' && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setMode('chat')}
+                  aria-label="Back to Pixel chat"
+                  className="h-9 w-9 rounded-xl bg-white/10 hover:bg-white/20 text-white"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+              )}
               
               <Button 
                 variant="ghost" 
