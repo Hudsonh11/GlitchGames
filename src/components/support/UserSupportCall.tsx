@@ -28,11 +28,14 @@ const UserSupportCall: React.FC<{ onExit: () => void }> = ({ onExit }) => {
   const [agentName, setAgentName] = useState<string | null>(null);
   const callIdRef = useRef<string | null>(null);
 
-  const finish = () => { setStage('ended'); setAnswered(false); };
+  const finish = () => { callIdRef.current = null; setStage('ended'); setAnswered(false); };
   const call = useVoiceCall(callId, 'user', answered, finish);
 
   const start = async () => {
     if (!userId) return;
+    // Close any previous unanswered call before starting a new one.
+    if (callIdRef.current) { await endCallRecord(callIdRef.current); callIdRef.current = null; }
+    setCallId(null); setAnswered(false); setAgentName(null);
     setStage('checking');
     const n = await countOnlineAgents();
     if (n === 0) { setStage('no_agents'); return; }
@@ -40,6 +43,7 @@ const UserSupportCall: React.FC<{ onExit: () => void }> = ({ onExit }) => {
       .insert({ user_id: userId, username: user?.username ?? null })
       .select('id').single();
     if (error || !data) { setStage('no_agents'); return; }
+    setAnswered(false);
     callIdRef.current = data.id;
     setCallId(data.id);
     setStage('calling');
@@ -54,14 +58,18 @@ const UserSupportCall: React.FC<{ onExit: () => void }> = ({ onExit }) => {
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'support_calls', filter: `id=eq.${callId}` }, ({ new: row }) => {
         const r = row as { status: string; agent_name: string | null };
         if (r.status === 'active' || r.status === 'on_hold') { setAgentName(r.agent_name); setAnswered(true); }
-        if (r.status === 'ended') finish();
+        if (r.status === 'ended' && callIdRef.current === callId) finish();
       })
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [callId]);
 
-  // Cancel a waiting call if the panel closes.
-  useEffect(() => () => { if (callIdRef.current) endCallRecord(callIdRef.current); }, []);
+  // Cancel a waiting call if the panel or tab closes.
+  useEffect(() => {
+    const onUnload = () => { if (callIdRef.current) endCallRecord(callIdRef.current); };
+    window.addEventListener('pagehide', onUnload);
+    return () => { window.removeEventListener('pagehide', onUnload); onUnload(); };
+  }, []);
 
   const hangUp = async () => {
     call.signalEnd();
@@ -106,7 +114,7 @@ const UserSupportCall: React.FC<{ onExit: () => void }> = ({ onExit }) => {
         <h4 className="font-display font-bold text-lg">Call ended</h4>
         <p className="text-sm text-muted-foreground">Thanks for contacting Glitch Games support!</p>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => { setCallId(null); start(); }}>Call again</Button>
+          <Button variant="outline" onClick={start}>Call again</Button>
           <Button onClick={onExit}>Back to Pixel</Button>
         </div>
       </div>
