@@ -30,12 +30,8 @@ const AgentHub: React.FC = () => {
     return () => { supabase.removeChannel(ch); };
   }, [isAgent, userId]);
 
-  // Ask agents for notification permission once.
-  useEffect(() => {
-    if (isAgent && 'Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission().catch(() => {});
-    }
-  }, [isAgent]);
+  // Notification permission is requested from the Support Desk via a button
+  // (browsers ignore permission prompts without a click).
 
   // System notifications for new calls (works while the tab is in the background).
   const notifiedRef = useRef<Set<string>>(new Set());

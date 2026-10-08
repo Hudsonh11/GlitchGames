@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Headphones, Phone, ShieldAlert } from 'lucide-react';
+import { Bell, Headphones, Phone, ShieldAlert } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Seo from '@/components/Seo';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,16 @@ const SupportDesk: React.FC = () => {
   const { toast } = useToast();
 
   useEffect(() => { const t = setTimeout(() => setChecked(true), 1200); return () => clearTimeout(t); }, []);
+
+  const [notifPerm, setNotifPerm] = useState<NotificationPermission | 'unsupported'>(
+    'Notification' in window ? Notification.permission : 'unsupported');
+  const enableAlerts = async () => {
+    if (window.top !== window.self) {
+      toast({ title: 'Open in its own tab', description: 'Notifications can only be turned on when the site is open in a full browser tab.' });
+      return;
+    }
+    try { setNotifPerm(await Notification.requestPermission()); } catch { /* ignore */ }
+  };
 
   const endLocal = useCallback(() => setActiveCall(null), []);
   const call = useVoiceCall(activeCall?.id ?? null, 'agent', !!activeCall, endLocal);
@@ -109,6 +119,20 @@ const SupportDesk: React.FC = () => {
             <p className="text-sm text-muted-foreground">You're online — players can call you.</p>
           </div>
         </div>
+
+        {isAgent && notifPerm !== 'granted' && notifPerm !== 'unsupported' && (
+          <div className="glass-panel rounded-2xl p-4 mb-4 flex items-center gap-3">
+            <Bell className="w-5 h-5 text-primary shrink-0" />
+            <p className="text-sm flex-1">
+              {notifPerm === 'denied'
+                ? 'Call alerts are blocked. Allow notifications for this site in your browser settings.'
+                : 'Turn on call alerts so you hear about new calls while in another tab.'}
+            </p>
+            {notifPerm !== 'denied' && <Button size="sm" onClick={enableAlerts}>Enable</Button>}
+          </div>
+        )}
+
+
 
         {notAgent ? (
           <div className="glass-panel rounded-2xl p-8 text-center space-y-3">
