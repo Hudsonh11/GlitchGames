@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Phone, PhoneOff, Headphones } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useGame } from '@/contexts/GameContext';
-import { AGENT_PRESENCE_CHANNEL, useIsSupportAgent } from '@/lib/supportCall';
+import { AGENT_PRESENCE_CHANNEL, freshSince, useIsSupportAgent } from '@/lib/supportCall';
 import { playSfx } from '@/lib/sfx';
 
 interface Waiting { id: string; username: string | null; created_at: string }
@@ -30,12 +30,48 @@ const AgentHub: React.FC = () => {
     return () => { supabase.removeChannel(ch); };
   }, [isAgent, userId]);
 
+  // Ask agents for notification permission once.
+  useEffect(() => {
+    if (isAgent && 'Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission().catch(() => {});
+    }
+  }, [isAgent]);
+
+  // System notifications for new calls (works while the tab is in the background).
+  const notifiedRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (!isAgent) return;
+    const notify = (c: Waiting) => {
+      if (notifiedRef.current.has(c.id)) return;
+      notifiedRef.current.add(c.id);
+      if (!('Notification' in window) || Notification.permission !== 'granted') return;
+      if (document.visibilityState === 'visible' && onTab) return;
+      try {
+        const n = new Notification('📞 Incoming support call', {
+          body: `${c.username ?? 'A player'} needs help — click to answer`,
+          tag: `support-${c.id}`, requireInteraction: true,
+        });
+        n.onclick = () => { window.focus(); n.close(); navigate(`/support?answer=${c.id}`); };
+      } catch { /* ignore */ }
+    };
+    const check = async () => {
+      const { data } = await supabase.from('support_calls').select('id, username, created_at')
+        .eq('status', 'waiting').gte('created_at', freshSince());
+      (data ?? []).forEach(notify);
+    };
+    check();
+    const ch = supabase.channel('agent-call-notify')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'support_calls' }, check)
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [isAgent, onTab, navigate]);
+
   // Incoming calls while off the Support tab.
   useEffect(() => {
     if (!isAgent || onTab) { setIncoming(null); return; }
     const refresh = async () => {
       const { data } = await supabase.from('support_calls').select('id, username, created_at')
-        .eq('status', 'waiting').order('created_at', { ascending: true }).limit(5);
+        .eq('status', 'waiting').gte('created_at', freshSince()).order('created_at', { ascending: true }).limit(5);
       const next = (data ?? []).find(c => !dismissed.has(c.id)) ?? null;
       setIncoming(prev => {
         if (next && next.id !== prev?.id) playSfx('notification');

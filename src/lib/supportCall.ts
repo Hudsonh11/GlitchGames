@@ -101,6 +101,8 @@ export function useVoiceCall(callId: string | null, role: CallRole, active: bool
 
   useEffect(() => {
     if (!callId || !active) return;
+    // Fresh state for every new call (previous call may have left 'ended').
+    setPhase('connecting'); setError(null); holdRef.current = false;
     let disposed = false;
     const pc = new RTCPeerConnection({ iceServers: [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }] });
     const pendingIce: RTCIceCandidateInit[] = [];
@@ -215,3 +217,7 @@ export function useVoiceCall(callId: string | null, role: CallRole, active: bool
 export async function endCallRecord(callId: string) {
   await supabase.from('support_calls').update({ status: 'ended', ended_at: new Date().toISOString() }).eq('id', callId);
 }
+
+/** Waiting calls older than this are treated as abandoned. */
+export const STALE_CALL_MS = 3 * 60 * 1000;
+export const freshSince = () => new Date(Date.now() - STALE_CALL_MS).toISOString();

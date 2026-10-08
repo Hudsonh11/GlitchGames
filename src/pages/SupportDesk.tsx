@@ -6,7 +6,7 @@ import Seo from '@/components/Seo';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useGame } from '@/contexts/GameContext';
-import { endCallRecord, useIsSupportAgent, useVoiceCall } from '@/lib/supportCall';
+import { endCallRecord, freshSince, useIsSupportAgent, useVoiceCall } from '@/lib/supportCall';
 import CallScreen from '@/components/support/CallScreen';
 import { useToast } from '@/hooks/use-toast';
 
@@ -29,7 +29,7 @@ const SupportDesk: React.FC = () => {
 
   const refresh = useCallback(async () => {
     const { data } = await supabase.from('support_calls').select('id, username, created_at')
-      .eq('status', 'waiting').order('created_at', { ascending: true });
+      .eq('status', 'waiting').gte('created_at', freshSince()).order('created_at', { ascending: true });
     setQueue(data ?? []);
   }, []);
 
@@ -59,9 +59,24 @@ const SupportDesk: React.FC = () => {
   useEffect(() => {
     const id = params.get('answer');
     if (!id || !isAgent || activeCall) return;
-    const c = queue.find(q => q.id === id);
-    if (c) { setParams({}, { replace: true }); answer(c); }
-  }, [params, queue, isAgent, activeCall, answer, setParams]);
+    setParams({}, { replace: true });
+    supabase.from('support_calls').select('id, username, created_at').eq('id', id).maybeSingle()
+      .then(({ data }) => {
+        if (data) answer(data);
+        else toast({ title: 'Call no longer available', description: 'The player hung up.' });
+      });
+  }, [params, isAgent, activeCall, answer, setParams, toast]);
+
+  // If the player hangs up (row ended) make sure the agent's call closes too.
+  useEffect(() => {
+    if (!activeCall) return;
+    const ch = supabase.channel(`desk-call-row-${activeCall.id}`)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'support_calls', filter: `id=eq.${activeCall.id}` }, ({ new: row }) => {
+        if ((row as { status: string }).status === 'ended') setActiveCall(null);
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [activeCall]);
 
   const hangUp = async () => {
     if (!activeCall) return;
