@@ -120,7 +120,7 @@ const SupportDesk: React.FC = () => {
           </div>
         </div>
 
-        {isAgent && notifPerm !== 'granted' && (
+        {isAgent && notifPerm !== 'granted' && notifPerm !== 'unsupported' && (
           <div className="glass-panel rounded-2xl p-4 mb-4 flex items-center gap-3">
             <Bell className="w-5 h-5 text-primary shrink-0" />
             <p className="text-sm flex-1">
