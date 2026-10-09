@@ -14,10 +14,11 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['Orbitron', 'sans-serif'],
-        body: ['Rajdhani', 'sans-serif'],
+        display: ['Space Grotesk', 'sans-serif'],
+        body: ['DM Sans', 'sans-serif'],
       },
       colors: {
+        hero: { foreground: "hsl(var(--hero-foreground))", muted: "hsl(var(--hero-muted))", surface: "hsl(var(--hero-surface))" },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
