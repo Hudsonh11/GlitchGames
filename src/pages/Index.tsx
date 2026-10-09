@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import featureArt from '@/assets/block-puzzle-feature.jpg';
 import { 
   Gamepad2, Zap, Trophy, Gift, Sparkles, Star, Crown, Rocket, Heart, 
   TrendingUp, Users, Clock, Target, Flame, Play, Shield, Gem, Award,
@@ -346,7 +347,7 @@ const Index: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="arcade-home min-h-screen bg-background relative">
       <Seo
         title="Glitch Games — Free Browser Arcade & Classic Games"
         description="Play 70+ free browser games on Glitch Games. Discover arcade hits, classic puzzles, and indie gems — earn coins, climb leaderboards, and unlock achievements."
@@ -354,108 +355,35 @@ const Index: React.FC = () => {
       />
       <Navbar />
 
-      {/* ═══ HERO ═══ */}
-      <section className="relative pt-24 pb-16 px-4 overflow-hidden">
-        <UltraParticles count={30} />
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="ultra-orb ultra-orb-cyan w-[600px] h-[600px] -top-20 -left-40" />
-          <div className="ultra-orb ultra-orb-magenta w-[500px] h-[500px] top-1/3 right-0 translate-x-1/2" />
-          <div className="ultra-orb ultra-orb-purple w-[400px] h-[400px] bottom-0 left-1/3" />
-        </div>
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-          style={{
-            backgroundImage: `linear-gradient(hsl(var(--primary) / 0.3) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.3) 1px, transparent 1px)`,
-            backgroundSize: '50px 50px',
-          }} />
-
-        <div className="container mx-auto relative z-10">
-          {isLoggedIn && user && (
-            <div className="max-w-4xl mx-auto mb-8 space-y-4 animate-fade-in">
-              <WelcomeBack username={user.username} avatar={user.avatar} level={user.level}
-                streak={currentStreak} lastPlayed={lastPlayedGame} hasReward={hasReward} />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <TipOfTheDay />
-                <QuickStats />
-              </div>
-            </div>
-          )}
-
-          {!isLoggedIn && (
-            <div className="text-center max-w-4xl mx-auto">
-              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full glass-panel mb-8 animate-fade-in">
-                <Sparkles className="w-5 h-5 text-primary animate-pulse" />
-                <span className="text-sm font-bold text-primary uppercase tracking-wider">60+ Premium Games • Free to Play</span>
-                <div className="flex -space-x-1">
-                  {[...Array(5)].map((_, i) => <Star key={i} className="w-3.5 h-3.5 text-warning fill-warning" />)}
-                </div>
-              </div>
-              
-              <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-black mb-6">
-                <span className="text-gradient animate-glitch inline-block">GLITCH</span>
-                <br />
-                <span className="text-foreground relative inline-block">
-                  GAMES
-                  <Crown className="absolute -top-4 -right-8 w-8 h-8 text-warning fill-warning animate-float" />
-                </span>
-              </h1>
-              
-              <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-2xl mx-auto animate-fade-in">
-                Play the hottest games, earn <span className="text-warning font-semibold">epic rewards</span>, and compete with players worldwide!
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">
-                <Button variant="gaming" size="xl" asChild className="group">
-                  <Link to="/login">
-                    <Zap className="w-5 h-5 mr-2 transition-transform group-hover:scale-110" />
-                    Join Now - It's Free!
-                  </Link>
-                </Button>
-                <Button variant="outline" size="xl" asChild className="group border-primary/30 hover:border-primary hover:bg-primary/10">
-                  <Link to="/leaderboard">
-                    <Trophy className="w-5 h-5 mr-2 text-warning transition-transform group-hover:scale-110" />
-                    View Leaderboard
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          )}
-
-          <div className="max-w-5xl mx-auto mt-10 space-y-6">
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <LivePlayerCount compact />
-              <QuickPlayButton games={games} isLoggedIn={isLoggedIn} />
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <UltraStatsCounter value="50K+" label="Active Players" color="primary" />
-              <UltraStatsCounter value="60+" label="Premium Games" color="secondary" />
-              <UltraStatsCounter value="$10K" label="In Rewards" color="warning" />
-              <UltraStatsCounter value="99.9%" label="Uptime" color="success" />
-            </div>
+      <section className="arcade-feature relative mt-16 overflow-hidden">
+        <img src={featureArt} alt="Colorful Block Blast puzzle board" width={1536} height={864} fetchPriority="high" className="absolute inset-0 w-full h-full object-cover object-[65%_center] sm:object-center" />
+        <div className="feature-scrim absolute inset-0 pointer-events-none" />
+        <div className="container mx-auto relative z-10 px-4 sm:px-8 flex flex-col justify-end sm:justify-center min-h-[460px] sm:min-h-[440px] py-10 sm:py-14">
+          <div className="flex items-center gap-2 mb-5 text-hero-muted text-xs"><span className="h-1.5 w-1.5 rounded-full bg-primary" /> GLITCH GAMES <span className="opacity-50">/</span> FEATURED PICK</div>
+          <h1 className="font-display text-4xl sm:text-5xl font-bold text-hero-foreground mb-4">Block Blast<span className="text-primary">.</span></h1>
+          <p className="text-hero-muted text-sm sm:text-base max-w-sm leading-relaxed mb-6">Find your next perfect match. Stack, clear, and chase a new personal best.</p>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button variant="gaming" size="lg" asChild><Link to={isLoggedIn ? '/game/block-blast' : '/login'}><Play />{isLoggedIn ? 'Play Block Blast' : 'Sign in to play'}</Link></Button>
+            <Button variant="outline" size="lg" asChild className="border-hero-muted/40 text-hero-foreground hover:bg-hero-foreground/10 hover:text-hero-foreground"><a href="#games">Explore games <ArrowRight /></a></Button>
           </div>
+          <div className="flex items-center gap-4 mt-6 text-xs text-hero-muted"><span className="flex items-center gap-1"><Star className="w-3.5 h-3.5 text-warning fill-warning"/> 4.8</span><span>Puzzle</span><span>{games.length} games to discover</span></div>
         </div>
       </section>
-
-      {/* ═══ QUICK ACCESS BAR ═══ */}
-      <section className="py-4 px-4 relative z-10">
-        <div className="container mx-auto max-w-6xl">
-          <QuickAccessBar />
+      <section className="px-4 border-b border-border/60">
+        <div className="container mx-auto flex flex-wrap items-center justify-between gap-4">
+          <div><p className="font-display font-semibold text-lg">{isLoggedIn && user ? `Welcome back, ${user.username}` : 'Your next favourite starts here'}</p><p className="text-xs text-muted-foreground mt-1">Arcade classics, new challenges, and a little friendly competition.</p></div>
+          <div className="flex items-center gap-3"><QuickPlayButton games={games} isLoggedIn={isLoggedIn} /><Button variant="ghost" asChild><Link to="/leaderboard"><Trophy />Rankings</Link></Button></div>
         </div>
       </section>
-
-      {/* ═══ FEATURED GAME SHOWCASE (Auto-rotating carousel) ═══ */}
-      <section className="py-6 px-4 relative z-10">
-        <div className="container mx-auto max-w-6xl">
-          <GameShowcase games={games} />
-        </div>
-      </section>
+      <section className="px-4"><div className="container mx-auto"><QuickAccessBar /></div></section>
 
       {/* ═══ ANNOUNCEMENTS + HERO BANNER ═══ */}
-      <section className="py-6 px-4 relative z-10">
+      {showMore && <section className="py-6 px-4 relative z-10">
         <div className="container mx-auto max-w-6xl space-y-6">
           <AnimatedHeroBanner />
           <Announcements />
         </div>
-      </section>
+      </section>}
 
       {/* ═══ DAILY BONUS + DAILY GOAL (logged in) ═══ */}
       {isLoggedIn && (
@@ -476,7 +404,7 @@ const Index: React.FC = () => {
       </section>
 
       {/* ═══ SPOTLIGHT GAMES ═══ */}
-      <section className="py-12 px-4 relative z-10">
+      {showMore && <section className="py-12 px-4 relative z-10">
         <div className="container mx-auto max-w-6xl">
           <SectionHeader icon={Star} title="Spotlight" subtitle="Editor's picks — the very best games on the platform" iconColor="text-warning" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -485,7 +413,7 @@ const Index: React.FC = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* ═══ QUICK PLAY CAROUSELS ═══ */}
       {showMore && <section className="py-8 px-4 relative z-10">
@@ -497,7 +425,7 @@ const Index: React.FC = () => {
 
 
       {/* ═══ GAME OF THE DAY + POPULAR NOW + NEWS ═══ */}
-      <section className="py-8 px-4 relative z-10">
+      {showMore && <section className="py-8 px-4 relative z-10">
         <div className="container mx-auto max-w-6xl">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
@@ -514,7 +442,7 @@ const Index: React.FC = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* ═══ QUICK CATEGORIES ═══ */}
       {showMore && <section className="py-8 px-4 relative z-10">
@@ -532,7 +460,7 @@ const Index: React.FC = () => {
 
 
       {/* ═══ TRENDING + LEADERBOARD + RECENT WINNERS ═══ */}
-      <section className="py-8 px-4 relative z-10">
+      {showMore && <section className="py-8 px-4 relative z-10">
         <div className="container mx-auto max-w-6xl">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <TrendingGames games={games} limit={5} />
@@ -546,7 +474,7 @@ const Index: React.FC = () => {
             <RecentWinners />
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* ═══ TOP RATED + MOST POPULAR + STAFF PICKS ═══ */}
       {showMore && <section className="py-8 px-4 relative z-10">
@@ -580,7 +508,7 @@ const Index: React.FC = () => {
             action={<Link to="/#games"><Button variant="outline" size="sm" className="gap-1">View All <ArrowRight className="w-4 h-4" /></Button></Link>} />
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             {newGames.map((game, i) => (
-              <div key={game.id} className="animate-fade-in" style={{ animationDelay: `${i * 0.08}s` }}>
+              <div key={game.id} className="animate-fade-in">
                 <Link to={`/game/${game.id}`} className="group block">
                   <div className="relative rounded-xl overflow-hidden aspect-square mb-2 transition-transform duration-300 group-hover:scale-105">
                     <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${game.image})` }} />
@@ -624,12 +552,12 @@ const Index: React.FC = () => {
             )} />
 
           {/* Category Tabs */}
-          <div className="flex flex-wrap gap-2 mb-8">
+          <div className="flex gap-2 mb-6 overflow-x-auto pb-3 scrollbar-hide">
             {categories.map((category) => (
               <Button key={category}
                 variant={selectedCategory === category ? 'gaming' : 'outline'}
                 size="sm" onClick={() => { setSelectedCategory(category); setShowAllGames(false); }}
-                className="transition-all">
+                className="shrink-0 transition-all">
                 {category}
                 {category !== 'All' && (
                   <span className="ml-1 text-xs opacity-60">({games.filter(g => g.category === category).length})</span>
@@ -638,9 +566,9 @@ const Index: React.FC = () => {
             ))}
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 min-[440px]:grid-cols-2 lg:grid-cols-4 gap-4">
             {displayedGames.map((game, index) => (
-              <div key={game.id} className="animate-fade-in" style={{ animationDelay: `${Math.min(index * 0.04, 0.4)}s` }}>
+              <div key={game.id} className="animate-fade-in">
                 <GameCard {...game} />
               </div>
             ))}
@@ -729,7 +657,7 @@ const Index: React.FC = () => {
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">The ultimate gaming platform built for players who demand the best</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 min-[440px]:grid-cols-2 lg:grid-cols-4 gap-4">
             <FeatureCard icon={Trophy} title="Compete & Win" description="Climb leaderboards and prove you're the best player on the platform."
               gradient="from-warning/20 to-warning/5" stat="50K+" statLabel="competitions" />
             <FeatureCard icon={Gift} title="Daily Rewards" description="Log in every day to claim free coins, gems, and exclusive items."

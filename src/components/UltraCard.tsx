@@ -53,7 +53,7 @@ const UltraCard = React.forwardRef<HTMLDivElement, UltraCardProps & React.HTMLAt
     <div
       ref={cardRef}
       className={`
-        relative overflow-hidden rounded-2xl border
+        relative overflow-hidden rounded-lg border
         transition-all duration-500
         ${variantClasses[variant]}
         ${hover ? 'hover:border-primary/50 hover:shadow-premium hover:-translate-y-1' : ''}
@@ -71,7 +71,7 @@ const UltraCard = React.forwardRef<HTMLDivElement, UltraCardProps & React.HTMLAt
     >
       {/* Shine effect on hover */}
       {hover && (
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500 -translate-x-full hover:translate-x-full" />
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-foreground/5 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500 -translate-x-full hover:translate-x-full" />
       )}
       
       {/* Top highlight line */}

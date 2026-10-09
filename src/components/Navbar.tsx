@@ -9,6 +9,7 @@ import SearchGames from '@/components/SearchGames';
 import Notifications from '@/components/Notifications';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuLabel } from '@/components/ui/dropdown-menu';
 import { ALL_GAMES } from '@/lib/gamesCatalog';
+import ThemeMenu from '@/components/ThemeMenu';
 
 const allGames = ALL_GAMES;
 
@@ -23,6 +24,8 @@ const Navbar: React.FC = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => { setIsOpen(false); }, [location.pathname]);
 
   const [notifications, setNotifications] = useState([
     { id: '1', type: 'reward' as const, title: 'Daily Reward Ready!', message: 'Your daily reward is waiting for you.', timestamp: new Date(), read: false },
@@ -49,30 +52,30 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'glass-panel border-b border-border/50 shadow-lg' : 'bg-background/60 backdrop-blur-md border-b border-transparent'}`}>
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto max-w-[1400px] px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-lg bg-gradient-hero flex items-center justify-center shadow-neon-cyan group-hover:animate-pulse-glow transition-all relative overflow-hidden">
+            <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center transition-all relative overflow-hidden">
               <Gamepad2 className="w-6 h-6 text-primary-foreground relative z-10" />
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-foreground/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
             </div>
-            <div className="hidden sm:block">
-              <span className="font-display text-xl font-bold text-gradient leading-none">
+            <div className="block">
+              <span className="font-display text-sm sm:text-lg font-bold text-foreground leading-none animate-glitch">
                 GLITCH GAMES
               </span>
-              <div className="text-[9px] text-muted-foreground tracking-widest uppercase">Play • Compete • Win</div>
+
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden xl:flex items-center gap-1">
             {navItems.map(({ path, label, icon: Icon }) => (
               <Link key={path} to={path}>
                 <Button
-                  variant={isActive(path) ? "gaming" : "ghost"}
+                  variant="ghost"
                   size="sm"
-                  className={`gap-2 relative ${isActive(path) ? 'shadow-glow' : ''}`}
+                  className={`gap-2 relative ${isActive(path) ? 'bg-primary/10 text-primary' : 'text-muted-foreground'}`}
                 >
                   <Icon className="w-4 h-4" />
                   {label}
@@ -93,7 +96,8 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* User Section */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <ThemeMenu />
             <div className="hidden sm:block">
               <SearchGames games={allGames} />
             </div>
@@ -143,7 +147,7 @@ const Navbar: React.FC = () => {
                 {/* User Profile Dropdown */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="flex items-center gap-2 group outline-none">
+                    <Button variant="ghost" className="h-auto p-1 flex items-center gap-2" aria-label="Open account menu">
                       <div className="relative">
                         <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-primary/50 group-hover:border-primary transition-colors group-hover:shadow-glow">
                           <img src={user?.avatar} alt="Avatar" className="w-full h-full object-cover" />
@@ -155,15 +159,15 @@ const Navbar: React.FC = () => {
                             strokeDasharray={`${xpProgress} ${100 - xpProgress}`} strokeLinecap="round" />
                         </svg>
                       </div>
-                      <div className="hidden sm:block text-left">
+                      <div className="hidden 2xl:block text-left">
                         <p className="text-sm font-display font-bold leading-tight">{user?.username}</p>
                         <p className="text-[10px] text-muted-foreground flex items-center gap-1">
                           <Star className="w-3 h-3 text-warning fill-warning" />
                           Level {user?.level}
                         </p>
                       </div>
-                      <ChevronDown className="w-3.5 h-3.5 text-muted-foreground hidden sm:block" />
-                    </button>
+                      <ChevronDown className="w-3.5 h-3.5 text-muted-foreground hidden 2xl:block" />
+                    </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuLabel className="flex items-center gap-3 py-3">
@@ -215,7 +219,7 @@ const Navbar: React.FC = () => {
             )}
 
             {/* Mobile Menu Button */}
-            <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsOpen(!isOpen)}>
+            <Button variant="ghost" size="icon" className="xl:hidden" aria-label={isOpen ? "Close navigation" : "Open navigation"} aria-expanded={isOpen} onClick={() => setIsOpen(!isOpen)}>
               {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </Button>
           </div>
@@ -223,7 +227,7 @@ const Navbar: React.FC = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden py-4 border-t border-border/50 animate-fade-in">
+          <div className="xl:hidden py-4 border-t border-border/50 animate-fade-in">
             {isLoggedIn && (
               <div className="flex gap-2 mb-4 px-2">
                 <div className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-warning/10 border border-warning/20">
