@@ -62,56 +62,33 @@ const GameCard: React.FC<GameCardProps> = ({
       onMouseLeave={handleMouseLeave}
       onMouseEnter={handleMouseEnter}
       style={{
-        transform: `perspective(1000px) rotateX(${transform.rotateX}deg) rotateY(${transform.rotateY}deg) scale(${isHovered ? 1.02 : 1})`,
+        transform: `perspective(1000px) rotateX(${transform.rotateX}deg) rotateY(${transform.rotateY}deg) scale(${isHovered ? 1.01 : 1})`,
         transition: isHovered ? 'transform 0.1s ease-out' : 'transform 0.5s ease-out',
       }}
     >
-      {/* Animated Border Glow */}
-      <div 
-        className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0"
-        style={{
-          background: `linear-gradient(135deg, ${color}, transparent 50%, hsl(var(--primary)))`,
-          filter: 'blur(20px)',
-          transform: 'scale(1.1)',
-        }}
-      />
-
       {/* Image Container */}
-      <div className="relative h-48 overflow-hidden z-10">
+      <div className="relative aspect-[16/10] overflow-hidden z-10">
         <div 
           className="absolute inset-0 bg-cover bg-center transition-all duration-700"
           style={{ 
             backgroundImage: `url(${image})`,
-            transform: isHovered ? 'scale(1.15)' : 'scale(1)',
+            transform: isHovered ? 'scale(1.05)' : 'scale(1)',
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
         
         {/* Shimmer Effect */}
         <div 
-          className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent 
+          className={`absolute inset-0 bg-gradient-to-r from-transparent via-foreground/10 to-transparent 
             transition-transform duration-1000 ${isHovered ? 'translate-x-full' : '-translate-x-full'}`}
           style={{ transform: isHovered ? 'translateX(100%)' : 'translateX(-100%)' }}
         />
         
-        {/* Category Badge */}
-        <div 
-          className="absolute top-3 left-3 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider 
-            backdrop-blur-sm border border-white/20 flex items-center gap-1.5 shadow-lg
-            transition-all duration-300 group-hover:scale-105"
-          style={{ 
-            backgroundColor: `${color}dd`,
-            color: 'hsl(var(--primary-foreground))',
-            boxShadow: isHovered ? `0 0 20px ${color}80` : 'none',
-          }}
-        >
-          <Sparkles className="w-3 h-3" />
-          {category}
-        </div>
+        <div className="absolute top-3 left-3 px-2 py-1 rounded-md text-xs font-medium bg-background/90 text-foreground backdrop-blur-sm border border-border/40">{category}</div>
 
         {/* Rating */}
         <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full 
-          bg-background/90 backdrop-blur-md border border-white/10 shadow-lg
+          bg-background/90 backdrop-blur-md border border-border/30 shadow-lg
           transition-all duration-300 group-hover:scale-105 group-hover:bg-background">
           <Star className="w-3.5 h-3.5 text-warning fill-warning" />
           <span className="text-xs font-bold">{rating}</span>
@@ -130,8 +107,8 @@ const GameCard: React.FC<GameCardProps> = ({
 
       {/* Content */}
       <div className="p-4 relative z-10">
-        <h3 className="font-display text-lg font-bold mb-1 group-hover:text-primary transition-colors duration-300 
-          flex items-center gap-2">
+        <h3 className="font-display text-base font-semibold mb-1 min-w-0 group-hover:text-primary transition-colors duration-300 
+          flex flex-wrap items-center gap-2">
           {title}
           {rating >= 4.8 && (
             <span className="text-xs px-1.5 py-0.5 rounded bg-warning/20 text-warning font-medium">
@@ -139,7 +116,7 @@ const GameCard: React.FC<GameCardProps> = ({
             </span>
           )}
         </h3>
-        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+        <p className="text-xs leading-relaxed text-muted-foreground mb-3 line-clamp-2 min-h-9">
           {description}
         </p>
 
