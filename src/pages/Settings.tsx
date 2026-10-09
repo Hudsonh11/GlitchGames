@@ -24,6 +24,7 @@ import { supabase } from '@/integrations/supabase/client';
 import BugReportModal from '@/components/BugReportModal';
 import UltraCard from '@/components/UltraCard';
 import ThemePicker from '@/components/ThemePicker';
+import { setAppearance, getAppearance } from '@/lib/themes';
 import PushNotificationToggle from '@/components/PushNotificationToggle';
 
 const Settings: React.FC = () => {
@@ -56,7 +57,8 @@ const Settings: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   // ── persistence side effects ────────────────────────────────────────────
-  useEffect(() => { localStorage.setItem('theme', theme); document.documentElement.classList.toggle('light', theme === 'light'); }, [theme]);
+  useEffect(() => { setAppearance(theme === 'light' ? 'light' : 'dark'); }, [theme]);
+  useEffect(() => { const sync = () => setTheme(getAppearance()); window.addEventListener('glitch-theme-change', sync); return () => window.removeEventListener('glitch-theme-change', sync); }, []);
   useEffect(() => { localStorage.setItem('reducedMotion', String(reducedMotion)); document.documentElement.classList.toggle('reduce-motion', reducedMotion); }, [reducedMotion]);
   useEffect(() => { localStorage.setItem('highContrast', String(highContrast)); document.documentElement.classList.toggle('high-contrast', highContrast); }, [highContrast]);
   useEffect(() => { localStorage.setItem('language', language); }, [language]);
