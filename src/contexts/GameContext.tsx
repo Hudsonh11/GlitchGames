@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
 import { playSfx } from '@/lib/sfx';
+import { toast } from '@/hooks/use-toast';
 
 
 interface UserProfile {
@@ -459,11 +460,13 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
       const plusMult = plusActive ? 2 : 1;
 
-      // Update profile XP (with prestige + Plus bonus)
+      // Update profile XP (with prestige + Plus bonus) and recalculate level
       const newXp = user.xp + Math.floor((score / 10) * xpMult * plusMult);
+      const newLevel = Math.floor(newXp / 100) + 1;
+      const leveledUp = newLevel > (user.level || 1);
       await supabase
         .from('profiles')
-        .update({ xp: newXp })
+        .update({ xp: newXp, level: newLevel })
         .eq('user_id', user.id);
 
       setUser({
@@ -471,7 +474,16 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         gamesPlayed: user.gamesPlayed + 1,
         totalScore: user.totalScore + score,
         xp: newXp,
+        level: newLevel,
       });
+
+      if (leveledUp) {
+        try { playSfx('levelup'); } catch { /* ignore */ }
+        toast({
+          title: `Level ${newLevel} reached!`,
+          description: 'Keep playing to earn more XP and rewards.',
+        });
+      }
 
       // Plus 25% coin bonus on score-positive runs
       if (plusActive && score > 0) {
