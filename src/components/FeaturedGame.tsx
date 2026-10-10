@@ -4,6 +4,10 @@ import { Play, Star, Users, Clock, ChevronLeft, ChevronRight, Sparkles } from 'l
 import { Button } from '@/components/ui/button';
 import UltraBadge from './UltraBadge';
 import blockBlastImg from '@/assets/block-puzzle-feature.jpg';
+import fruitSliceImg from '@/assets/fruit-slice-feature.jpg';
+import geometryDashImg from '@/assets/geometry-dash-feature.jpg';
+import pacManImg from '@/assets/pac-man-feature.jpg';
+import snakeImg from '@/assets/snake-feature.jpg';
 
 interface FeaturedGameData {
   id: string;
@@ -28,54 +32,44 @@ const featuredGames: FeaturedGameData[] = [
     featured: 'Featured Pick',
   },
   {
+    id: 'fruit-slice',
+    title: 'Fruit Slice',
+    description: 'Swipe, slash and chain combos through a storm of flying fruit. Don\'t hit the bombs — how long can you keep the streak alive?',
+    image: fruitSliceImg,
+    rating: 4.7,
+    players: '38.6K',
+    category: 'Arcade',
+    featured: 'Fan Favorite',
+  },
+  {
     id: 'geometry-dash',
     title: 'Geometry Dash',
     description: 'Jump and fly through danger in this rhythm-based action platformer! Test your reflexes and timing.',
-    image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&h=400&fit=crop',
+    image: geometryDashImg,
     rating: 4.9,
     players: '25.1K',
     category: 'Action',
     featured: 'Most Popular',
   },
   {
-    id: 'tetris',
-    title: 'Tetris',
-    description: 'Stack falling blocks to clear lines in this timeless puzzle classic that never gets old!',
-    image: 'https://images.unsplash.com/photo-1493711662062-fa541f7f3d24?w=800&h=400&fit=crop',
+    id: 'pac-man',
+    title: 'Pac-Man',
+    description: 'Gobble every dot, dodge the ghosts and chase the power pellet through the neon maze in the arcade legend.',
+    image: pacManImg,
     rating: 4.9,
-    players: '35.7K',
-    category: 'Puzzle',
-    featured: 'Editor\'s Choice',
-  },
-  {
-    id: 'wordle',
-    title: 'Wordle',
-    description: 'Guess the 5-letter word in 6 tries or less! A daily word puzzle that\'s taken the world by storm.',
-    image: 'https://images.unsplash.com/photo-1632501641765-e568d28b0015?w=800&h=400&fit=crop',
-    rating: 4.9,
-    players: '45.2K',
-    category: 'Word',
-    featured: 'Trending Now',
+    players: '41.8K',
+    category: 'Arcade',
+    featured: 'Arcade Legend',
   },
   {
     id: 'snake',
     title: 'Snake',
     description: 'The classic arcade legend — grow your snake, dodge the walls, and beat your best length!',
-    image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=400&fit=crop',
+    image: snakeImg,
     rating: 4.8,
     players: '31.4K',
     category: 'Arcade',
-    featured: 'Fan Favorite',
-  },
-  {
-    id: '2048',
-    title: '2048',
-    description: 'Slide and merge tiles to reach the legendary 2048 tile in this brain-teasing number puzzle.',
-    image: 'https://images.unsplash.com/photo-1611996575749-79a3a250f948?w=800&h=400&fit=crop',
-    rating: 4.8,
-    players: '28.9K',
-    category: 'Puzzle',
-    featured: 'Brain Teaser',
+    featured: 'Trending Now',
   },
 ];
 
