@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Play, Star, Users, Clock, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import UltraBadge from './UltraBadge';
+import blockBlastImg from '@/assets/block-puzzle-feature.jpg';
 
 interface FeaturedGameData {
   id: string;
@@ -16,6 +17,16 @@ interface FeaturedGameData {
 }
 
 const featuredGames: FeaturedGameData[] = [
+  {
+    id: 'block-blast',
+    title: 'Block Blast',
+    description: 'Blast through colorful block puzzles in this addictive strategy game. Clear lines, chain combos, chase the high score!',
+    image: blockBlastImg,
+    rating: 5.0,
+    players: '52.3K',
+    category: 'Puzzle',
+    featured: 'Featured Pick',
+  },
   {
     id: 'geometry-dash',
     title: 'Geometry Dash',
@@ -46,6 +57,26 @@ const featuredGames: FeaturedGameData[] = [
     category: 'Word',
     featured: 'Trending Now',
   },
+  {
+    id: 'snake',
+    title: 'Snake',
+    description: 'The classic arcade legend — grow your snake, dodge the walls, and beat your best length!',
+    image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=400&fit=crop',
+    rating: 4.8,
+    players: '31.4K',
+    category: 'Arcade',
+    featured: 'Fan Favorite',
+  },
+  {
+    id: '2048',
+    title: '2048',
+    description: 'Slide and merge tiles to reach the legendary 2048 tile in this brain-teasing number puzzle.',
+    image: 'https://images.unsplash.com/photo-1611996575749-79a3a250f948?w=800&h=400&fit=crop',
+    rating: 4.8,
+    players: '28.9K',
+    category: 'Puzzle',
+    featured: 'Brain Teaser',
+  },
 ];
 
 const FeaturedGame: React.FC = () => {
@@ -57,7 +88,7 @@ const FeaturedGame: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       nextSlide();
-    }, 6000);
+    }, 5000);
     return () => clearInterval(interval);
   }, [currentIndex]);
 
