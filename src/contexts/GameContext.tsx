@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { supabase } from '@/integrations/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
 import { playSfx } from '@/lib/sfx';
+import { toast } from '@/hooks/use-toast';
 
 
 interface UserProfile {
