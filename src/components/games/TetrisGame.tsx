@@ -221,15 +221,16 @@ const TetrisGame: React.FC = () => {
           if (rotated && isValidMove(rotated, board)) setCurrentPiece(rotated);
           break;
         }
-        case ' ':
+        case ' ': {
           e.preventDefault();
           // Hard drop
-          let dropPiece = { ...currentPiece };
+          const dropPiece = { ...currentPiece };
           while (isValidMove({ ...dropPiece, y: dropPiece.y + 1 }, board)) {
             dropPiece.y++;
           }
           setCurrentPiece(dropPiece);
           break;
+        }
         case 'Escape':
           e.preventDefault();
           setIsPaused(true);
