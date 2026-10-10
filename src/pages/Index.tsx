@@ -1,5 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import featureArt from '@/assets/block-puzzle-feature.jpg';
+import fruitSliceArt from '@/assets/fruit-slice-feature.jpg';
+import geometryDashArt from '@/assets/geometry-dash-feature.jpg';
+import pacManArt from '@/assets/pac-man-feature.jpg';
+import snakeArt from '@/assets/snake-feature.jpg';
 import { 
   Gamepad2, Zap, Trophy, Gift, Sparkles, Star, Crown, Rocket, Heart, 
   TrendingUp, Users, Clock, Target, Flame, Play, Shield, Gem, Award,
@@ -53,6 +57,55 @@ import { useGame } from '@/contexts/GameContext';
 import { Progress } from '@/components/ui/progress';
 import { getCurrentSeason } from '@/lib/season';
 const __SEASON__ = getCurrentSeason();
+
+// The five games the homepage hero rotates through, one every 5 seconds.
+const featuredPicks = [
+  {
+    id: 'block-blast',
+    title: 'Block Blast',
+    blurb: 'Find your next perfect match. Stack, clear, and chase a new personal best.',
+    category: 'Puzzle',
+    rating: 4.8,
+    image: featureArt,
+    alt: 'Colorful Block Blast puzzle board',
+  },
+  {
+    id: 'fruit-slice',
+    title: 'Fruit Slice',
+    blurb: 'Swipe through a storm of flying fruit, chain the combos, and never touch a bomb.',
+    category: 'Arcade',
+    rating: 4.7,
+    image: fruitSliceArt,
+    alt: 'Fruit splitting mid-air behind a blade of light',
+  },
+  {
+    id: 'geometry-dash',
+    title: 'Geometry Dash',
+    blurb: 'Jump, fly and flip to the beat through a neon gauntlet of spikes.',
+    category: 'Action',
+    rating: 4.9,
+    image: geometryDashArt,
+    alt: 'Neon cube leaping over spikes on a rhythm course',
+  },
+  {
+    id: 'pac-man',
+    title: 'Pac-Man',
+    blurb: 'Gobble every dot, outwit the ghosts and race for the power pellet.',
+    category: 'Arcade',
+    rating: 4.9,
+    image: pacManArt,
+    alt: 'Glowing neon maze with a chasing yellow character',
+  },
+  {
+    id: 'snake',
+    title: 'Snake',
+    blurb: 'Grow longer, sharper and faster — one wrong turn ends the run.',
+    category: 'Arcade',
+    rating: 4.8,
+    image: snakeArt,
+    alt: 'Neon snake curling across a glowing grid arena',
+  },
+];
 
 const games = [
   { id: 'block-blast', title: 'Block Blast', description: 'Match and blast colorful blocks in this addictive puzzle game!', image: 'https://images.unsplash.com/photo-1614294149010-950b698f72c0?w=400&h=300&fit=crop', category: 'Puzzle', rating: 4.8, players: '12.5K', color: 'hsl(185, 100%, 50%)' },
@@ -334,6 +387,33 @@ const Index: React.FC = () => {
 
   };
 
+  const [heroIndex, setHeroIndex] = useState(0);
+  const [heroFading, setHeroFading] = useState(false);
+  const [heroPaused, setHeroPaused] = useState(false);
+
+  useEffect(() => {
+    if (heroPaused) return;
+    const interval = setInterval(() => {
+      setHeroFading(true);
+      setTimeout(() => {
+        setHeroIndex((prev) => (prev + 1) % featuredPicks.length);
+        setHeroFading(false);
+      }, 400);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [heroPaused]);
+
+  const hero = featuredPicks[heroIndex];
+
+  const goToHero = (index: number) => {
+    if (index === heroIndex) return;
+    setHeroFading(true);
+    setTimeout(() => {
+      setHeroIndex(index);
+      setHeroFading(false);
+    }, 300);
+  };
+
   const milestones = useMemo(() => [
     { id: '1', title: 'Play 10 Games', description: 'Play 10 different games', target: 10, current: Math.min(totalGamesPlayed, 10), reward: { coins: 100, gems: 5 }, icon: '🎮' },
     { id: '2', title: 'Score 50K', description: 'Accumulate 50,000 total score', target: 50000, current: Math.min(totalScore, 50000), reward: { coins: 500, gems: 25 }, icon: '🏆' },
@@ -355,18 +435,49 @@ const Index: React.FC = () => {
       />
       <Navbar />
 
-      <section className="arcade-feature relative mt-16 overflow-hidden">
-        <img src={featureArt} alt="Colorful Block Blast puzzle board" width={1536} height={864} fetchPriority="high" className="absolute inset-0 w-full h-full object-cover object-[65%_center] sm:object-center" />
+      <section
+        className="arcade-feature relative mt-16 overflow-hidden"
+        onMouseEnter={() => setHeroPaused(true)}
+        onMouseLeave={() => setHeroPaused(false)}
+      >
+        {featuredPicks.map((pick, i) => (
+          <img
+            key={pick.id}
+            src={pick.image}
+            alt={pick.alt}
+            width={1536}
+            height={864}
+            loading={i === 0 ? undefined : 'lazy'}
+            className={`absolute inset-0 w-full h-full object-cover object-[65%_center] sm:object-center transition-opacity duration-500 ${
+              i === heroIndex ? 'opacity-100' : 'opacity-0'
+            }`}
+          />
+        ))}
         <div className="feature-scrim absolute inset-0 pointer-events-none" />
         <div className="container mx-auto relative z-10 px-4 sm:px-8 flex flex-col justify-end sm:justify-center min-h-[460px] sm:min-h-[440px] py-10 sm:py-14">
-          <div className="flex items-center gap-2 mb-5 text-hero-muted text-xs"><span className="h-1.5 w-1.5 rounded-full bg-primary" /> GLITCH GAMES <span className="opacity-50">/</span> FEATURED PICK</div>
-          <h1 className="font-display text-4xl sm:text-5xl font-bold text-hero-foreground mb-4">Block Blast<span className="text-primary">.</span></h1>
-          <p className="text-hero-muted text-sm sm:text-base max-w-sm leading-relaxed mb-6">Find your next perfect match. Stack, clear, and chase a new personal best.</p>
-          <div className="flex flex-wrap items-center gap-3">
-            <Button variant="gaming" size="lg" asChild><Link to={isLoggedIn ? '/game/block-blast' : '/login'}><Play />{isLoggedIn ? 'Play Block Blast' : 'Sign in to play'}</Link></Button>
-            <Button variant="outline" size="lg" asChild className="border-hero-muted/40 text-hero-foreground hover:bg-hero-foreground/10 hover:text-hero-foreground"><a href="#games">Explore games <ArrowRight /></a></Button>
+          <div className={`transition-all duration-300 ${heroFading ? 'opacity-0 translate-y-3' : 'opacity-100 translate-y-0'}`}>
+            <div className="flex items-center gap-2 mb-5 text-hero-muted text-xs"><span className="h-1.5 w-1.5 rounded-full bg-primary" /> GLITCH GAMES <span className="opacity-50">/</span> FEATURED PICK</div>
+            <h1 className="font-display text-4xl sm:text-5xl font-bold text-hero-foreground mb-4">{hero.title}<span className="text-primary">.</span></h1>
+            <p className="text-hero-muted text-sm sm:text-base max-w-sm leading-relaxed mb-6">{hero.blurb}</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <Button variant="gaming" size="lg" asChild><Link to={isLoggedIn ? `/game/${hero.id}` : '/login'}><Play />{isLoggedIn ? `Play ${hero.title}` : 'Sign in to play'}</Link></Button>
+              <Button variant="outline" size="lg" asChild className="border-hero-muted/40 text-hero-foreground hover:bg-hero-foreground/10 hover:text-hero-foreground"><a href="#games">Explore games <ArrowRight /></a></Button>
+            </div>
+            <div className="flex items-center gap-4 mt-6 text-xs text-hero-muted"><span className="flex items-center gap-1"><Star className="w-3.5 h-3.5 text-warning fill-warning"/> {hero.rating}</span><span>{hero.category}</span><span>{games.length} games to discover</span></div>
           </div>
-          <div className="flex items-center gap-4 mt-6 text-xs text-hero-muted"><span className="flex items-center gap-1"><Star className="w-3.5 h-3.5 text-warning fill-warning"/> 4.8</span><span>Puzzle</span><span>{games.length} games to discover</span></div>
+          <div className="flex items-center gap-2 mt-7">
+            {featuredPicks.map((pick, i) => (
+              <button
+                key={pick.id}
+                type="button"
+                aria-label={`Show ${pick.title}`}
+                onClick={() => goToHero(i)}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  i === heroIndex ? 'w-8 bg-primary' : 'w-1.5 bg-hero-muted/40 hover:bg-hero-muted/70'
+                }`}
+              />
+            ))}
+          </div>
         </div>
       </section>
       <section className="px-4 border-b border-border/60">
