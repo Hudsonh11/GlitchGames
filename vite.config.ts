@@ -28,6 +28,7 @@ export default defineConfig(({ mode }) => ({
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
+        navigationPreload: true,
         runtimeCaching: [
           {
             urlPattern: ({ request, url, sameOrigin }) =>
@@ -37,8 +38,8 @@ export default defineConfig(({ mode }) => ({
             handler: "NetworkFirst",
             options: {
               cacheName: "html-navigations",
-              networkTimeoutSeconds: 5,
-              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 },
+              networkTimeoutSeconds: 4,
+              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 },
             },
           },
           {

@@ -51,7 +51,29 @@ export async function setupServiceWorker() {
   try {
     // Drop the cache created by the previous hand-written worker.
     await caches.delete(LEGACY_CACHE).catch(() => {});
-    await navigator.serviceWorker.register(SW_URL, { scope: '/' });
+
+    // Reload once when a new service worker takes control, so every device
+    // picks up the latest deploy without clearing browser history.
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
+
+    const reg = await navigator.serviceWorker.register(SW_URL, {
+      scope: '/',
+      updateViaCache: 'none', // never serve a cached sw.js
+    });
+
+    // Check for a new version on load, when the tab regains focus,
+    // and every 30 minutes while the app stays open.
+    const checkForUpdate = () => reg.update().catch(() => {});
+    checkForUpdate();
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') checkForUpdate();
+    });
+    window.setInterval(checkForUpdate, 30 * 60 * 1000);
   } catch {
     // Non-fatal: the site works fine without offline support.
   }
