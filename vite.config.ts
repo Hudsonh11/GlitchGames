@@ -28,6 +28,7 @@ export default defineConfig(({ mode }) => ({
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
+        navigationPreload: true,
         runtimeCaching: [
           {
             urlPattern: ({ request, url, sameOrigin }) =>
