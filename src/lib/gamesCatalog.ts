@@ -97,4 +97,7 @@ export const ALL_GAMES = [
   { id: 'cup-shuffle', title: 'Cup Shuffle', category: 'Skill', rating: 4.6, color: 'hsl(45, 100%, 55%)' },
   { id: 'ring-ball', title: 'Ring Ball', category: 'Arcade', rating: 4.9, color: 'hsl(300, 100%, 60%)' },
   { id: 'bomb-defuse', title: 'Bomb Defuse', category: 'Brain', rating: 4.8, color: 'hsl(0, 85%, 55%)' },
+  { id: 'code-breaker', title: 'Code Breaker', category: 'Brain', rating: 4.7, color: 'hsl(210, 90%, 55%)' },
+  { id: 'orbit-dodge', title: 'Orbit Dodge', category: 'Arcade', rating: 4.8, color: 'hsl(260, 90%, 60%)' },
+  { id: 'speed-sort', title: 'Speed Sort', category: 'Skill', rating: 4.6, color: 'hsl(140, 70%, 50%)' },
 ];

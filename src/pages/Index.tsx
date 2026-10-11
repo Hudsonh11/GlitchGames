@@ -488,12 +488,13 @@ const Index: React.FC = () => {
       </section>
       <section className="px-4"><div className="container mx-auto"><QuickAccessBar /></div></section>
 
-      {/* ═══ ANNOUNCEMENTS + HERO BANNER ═══ */}
+      {/* ═══ ANNOUNCEMENTS (always visible) ═══ */}
+      <section className="pt-6 px-4 relative z-10">
+        <div className="container mx-auto max-w-6xl"><Announcements /></div>
+      </section>
+
       {showMore && <section className="py-6 px-4 relative z-10">
-        <div className="container mx-auto max-w-6xl space-y-6">
-          <AnimatedHeroBanner />
-          <Announcements />
-        </div>
+        <div className="container mx-auto max-w-6xl"><AnimatedHeroBanner /></div>
       </section>}
 
       {/* ═══ DAILY BONUS + DAILY GOAL (logged in) ═══ */}

@@ -96,6 +96,9 @@ import GlassSmash from '@/components/games/GlassSmash';
 import Reversi from '@/components/games/Reversi';
 import CupShuffle from '@/components/games/CupShuffle';
 import BombDefuse from '@/components/games/BombDefuse';
+import CodeBreaker from '@/components/games/CodeBreaker';
+import OrbitDodge from '@/components/games/OrbitDodge';
+import SpeedSort from '@/components/games/SpeedSort';
 import RingBall from '@/components/games/RingBall';
 import { useGame } from '@/contexts/GameContext';
 import { usePlusStatus } from '@/hooks/usePlusStatus';
@@ -211,6 +214,9 @@ const games: Record<string, { component: React.FC<any>; title: string; category:
   'cup-shuffle': { component: CupShuffle, title: 'Cup Shuffle', category: 'Skill' },
   'ring-ball': { component: RingBall, title: 'Ring Ball', category: 'Arcade' },
   'bomb-defuse': { component: BombDefuse, title: 'Bomb Defuse', category: 'Brain' },
+  'code-breaker': { component: CodeBreaker, title: 'Code Breaker', category: 'Brain' },
+  'orbit-dodge': { component: OrbitDodge, title: 'Orbit Dodge', category: 'Arcade' },
+  'speed-sort': { component: SpeedSort, title: 'Speed Sort', category: 'Skill' },
 };
 
 const PLUS_GAMES = new Set(['guess-the-person', 'tanks', 'ultra-blitz', 'soap-carving']);
