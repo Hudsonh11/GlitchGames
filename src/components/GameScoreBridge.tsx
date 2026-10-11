@@ -67,13 +67,21 @@ const GameScoreBridge: React.FC<Props> = ({ gameId, component: GameComponent }) 
     timer.current = setTimeout(() => { void flush(); }, FLUSH_MS);
   }, [flush]);
 
-  // Persist whatever is pending when the player leaves the game.
+  // Keep latest flush in a ref so the unmount effect runs only once
+  // (previously it re-ran — and saved — on every re-render).
+  const flushRef = useRef(flush);
+  flushRef.current = flush;
   useEffect(() => {
+    const onHide = () => { if (document.visibilityState === 'hidden') void flushRef.current(); };
+    document.addEventListener('visibilitychange', onHide);
+    window.addEventListener('pagehide', onHide);
     return () => {
+      document.removeEventListener('visibilitychange', onHide);
+      window.removeEventListener('pagehide', onHide);
       if (timer.current) clearTimeout(timer.current);
-      void flush();
+      void flushRef.current();
     };
-  }, [flush]);
+  }, []);
 
   return (
     <>

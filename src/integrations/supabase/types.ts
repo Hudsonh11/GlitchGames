@@ -1820,6 +1820,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      adjust_currency: {
+        Args: { _coins: number; _gems: number }
+        Returns: {
+          coins: number
+          gems: number
+        }[]
+      }
+      claim_daily_reward: {
+        Args: never
+        Returns: {
+          claim_date: string
+          coins: number
+          gems: number
+          streak: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -134,6 +134,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [gamesShutdown, setGamesShutdownState] = useState(false);
   const [bannedUsers, setBannedUsers] = useState<string[]>([]);
   const [allUsers, setAllUsers] = useState<UserProfile[]>([]);
+  const latestUserId = React.useRef<string | null>(null);
 
   // Load sound settings from localStorage
   useEffect(() => {
@@ -155,6 +156,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           fetchUserProfile(newSession.user.id);
         }, 0);
       } else {
+        latestUserId.current = null;
         setUser(null);
         setIsLoading(false);
       }
@@ -175,6 +177,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const fetchUserProfile = async (userId: string) => {
+    latestUserId.current = userId;
     try {
       const { data: profile, error } = await supabase
         .from('profiles')
@@ -185,12 +188,18 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (error) throw error;
 
       if (profile) {
-        // Check if user is banned
-        const { data: banData } = await supabase
+        // Check if user is banned — fail closed if the check errors.
+        const { data: banData, error: banError } = await supabase
           .from('banned_users')
           .select('*')
           .eq('user_id', userId)
           .maybeSingle();
+        if (banError || banData) {
+          await supabase.auth.signOut();
+          setUser(null);
+          return;
+        }
+
 
         // Check if user is admin
         const { data: roleData } = await supabase
@@ -237,6 +246,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           isAdmin: !!roleData,
         };
 
+        if (latestUserId.current !== userId) return;
         setUser(userProfile);
         setAchievements(userProfile.achievements);
 
@@ -289,12 +299,16 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       // Check if user is banned
-      const { data: banData } = await supabase
+      const { data: banData, error: banError } = await supabase
         .from('banned_users')
         .select('*')
         .eq('user_id', data.user?.id)
         .maybeSingle();
 
+      if (banError) {
+        await supabase.auth.signOut();
+        return { success: false, error: 'Could not verify your account. Please try again.' };
+      }
       if (banData) {
         await supabase.auth.signOut();
         return { success: false, error: 'Your account has been banned.' };
@@ -348,57 +362,43 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  // Atomic server-side balance change; never lets balances go negative.
+  const adjust = async (coinsDelta: number, gemsDelta: number): Promise<boolean> => {
+    if (!user || !session) return false;
+    const { data, error } = await (supabase.rpc as any)('adjust_currency', { _coins: coinsDelta, _gems: gemsDelta });
+    const row = Array.isArray(data) ? data[0] : data;
+    if (error || !row) return false;
+    setUser(prev => (prev ? { ...prev, coins: row.coins, gems: row.gems } : prev));
+    return true;
+  };
+
+  const pending = React.useRef(new Set<string>());
+  const guarded = async (key: string, fn: () => Promise<boolean>) => {
+    if (pending.current.has(key)) return false;
+    pending.current.add(key);
+    try { return await fn(); } finally { pending.current.delete(key); }
+  };
+
   const addCoins = async (amount: number) => {
-    if (!user || !session) return;
-
-    const newCoins = user.coins + amount;
-    await supabase
-      .from('profiles')
-      .update({ coins: newCoins })
-      .eq('user_id', user.id);
-
-    setUser({ ...user, coins: newCoins });
-    if (amount > 0) { try { playSfx('coin'); } catch {/* ignore */} }
+    const amt = Math.floor(amount);
+    if (!amt || !(await adjust(amt, 0))) return;
+    if (amt > 0) { try { playSfx('coin'); } catch {/* ignore */} }
   };
 
   const addGems = async (amount: number) => {
-    if (!user || !session) return;
-
-    const newGems = user.gems + amount;
-    await supabase
-      .from('profiles')
-      .update({ gems: newGems })
-      .eq('user_id', user.id);
-
-    setUser({ ...user, gems: newGems });
-    if (amount > 0) { try { playSfx('powerup'); } catch {/* ignore */} }
+    const amt = Math.floor(amount);
+    if (!amt || !(await adjust(0, amt))) return;
+    if (amt > 0) { try { playSfx('powerup'); } catch {/* ignore */} }
   };
 
-
   const spendCoins = async (amount: number): Promise<boolean> => {
-    if (!user || user.coins < amount) return false;
-
-    const newCoins = user.coins - amount;
-    await supabase
-      .from('profiles')
-      .update({ coins: newCoins })
-      .eq('user_id', user.id);
-
-    setUser({ ...user, coins: newCoins });
-    return true;
+    if (!user || amount <= 0 || user.coins < amount) return false;
+    return guarded('coins', () => adjust(-Math.floor(amount), 0));
   };
 
   const spendGems = async (amount: number): Promise<boolean> => {
-    if (!user || user.gems < amount) return false;
-
-    const newGems = user.gems - amount;
-    await supabase
-      .from('profiles')
-      .update({ gems: newGems })
-      .eq('user_id', user.id);
-
-    setUser({ ...user, gems: newGems });
-    return true;
+    if (!user || amount <= 0 || user.gems < amount) return false;
+    return guarded('gems', () => adjust(0, -Math.floor(amount)));
   };
 
   const updateSoundSettings = (settings: Partial<SoundSettings>) => {
@@ -513,31 +513,18 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
   };
 
-  const claimDailyReward = async (day: number): Promise<boolean> => {
+  const claimDailyReward = async (_day: number): Promise<boolean> => {
     if (!user || !session) return false;
-
-    const today = new Date().toISOString().split('T')[0];
-    if (lastClaimDate === today) return false;
-
-    // Generate reward for the specific day (endless system)
-    const reward = generateReward(day);
-
-    await addCoins(reward.coins);
-    await addGems(reward.gems);
-
-    const newStreak = day;
-    await supabase
-      .from('daily_rewards')
-      .update({
-        last_claim_date: today,
-        streak: newStreak,
-      })
-      .eq('user_id', user.id);
-
-    setLastClaimDate(today);
-    setCurrentStreak(newStreak);
-
-    return true;
+    return guarded('daily', async () => {
+      const { data, error } = await (supabase.rpc as any)('claim_daily_reward');
+      const row = Array.isArray(data) ? data[0] : data;
+      if (error || !row) return false;
+      setUser(prev => (prev ? { ...prev, coins: prev.coins + row.coins, gems: prev.gems + row.gems } : prev));
+      setLastClaimDate(row.claim_date);
+      setCurrentStreak(row.streak);
+      try { playSfx('coin'); } catch {/* ignore */}
+      return true;
+    });
   };
 
   const fetchLeaderboard = async (gameId?: string) => {
