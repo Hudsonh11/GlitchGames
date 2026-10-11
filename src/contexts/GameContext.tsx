@@ -134,6 +134,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [gamesShutdown, setGamesShutdownState] = useState(false);
   const [bannedUsers, setBannedUsers] = useState<string[]>([]);
   const [allUsers, setAllUsers] = useState<UserProfile[]>([]);
+  const latestUserId = React.useRef<string | null>(null);
 
   // Load sound settings from localStorage
   useEffect(() => {
@@ -155,6 +156,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           fetchUserProfile(newSession.user.id);
         }, 0);
       } else {
+        latestUserId.current = null;
         setUser(null);
         setIsLoading(false);
       }
@@ -244,6 +246,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           isAdmin: !!roleData,
         };
 
+        if (latestUserId.current !== userId) return;
         setUser(userProfile);
         setAchievements(userProfile.achievements);
 
@@ -296,12 +299,16 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
 
       // Check if user is banned
-      const { data: banData } = await supabase
+      const { data: banData, error: banError } = await supabase
         .from('banned_users')
         .select('*')
         .eq('user_id', data.user?.id)
         .maybeSingle();
 
+      if (banError) {
+        await supabase.auth.signOut();
+        return { success: false, error: 'Could not verify your account. Please try again.' };
+      }
       if (banData) {
         await supabase.auth.signOut();
         return { success: false, error: 'Your account has been banned.' };
