@@ -8,6 +8,13 @@
       "when": 1791354769968,
       "tag": "0000_support_calls",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791708907299,
+      "tag": "0001_atomic_currency_and_daily_reward",
+      "breakpoints": true
     }
   ]
 }
