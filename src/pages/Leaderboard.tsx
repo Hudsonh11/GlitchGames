@@ -113,6 +113,9 @@ const games = [
   { id: 'reversi', name: 'Reversi', category: 'Strategy' },
   { id: 'cup-shuffle', name: 'Cup Shuffle', category: 'Skill' },
   { id: 'bomb-defuse', name: 'Bomb Defuse', category: 'Brain' },
+  { id: 'code-breaker', name: 'Code Breaker', category: 'Brain' },
+  { id: 'orbit-dodge', name: 'Orbit Dodge', category: 'Arcade' },
+  { id: 'speed-sort', name: 'Speed Sort', category: 'Skill' },
   { id: 'ring-ball', name: 'Ring Ball', category: 'Arcade' },
 ];
 
