@@ -28,7 +28,6 @@ import ScrollToTop from '@/components/ScrollToTop';
 import TipOfTheDay from '@/components/TipOfTheDay';
 import PlatformStats from '@/components/PlatformStats';
 import Footer from '@/components/Footer';
-import Announcements from '@/components/Announcements';
 import RecentWinners from '@/components/RecentWinners';
 import DailyQuests from '@/components/DailyQuests';
 import WeeklyChallenge from '@/components/WeeklyChallenge';
@@ -491,10 +490,6 @@ const Index: React.FC = () => {
       </section>
       <section className="px-4"><div className="container mx-auto"><QuickAccessBar /></div></section>
 
-      {/* ═══ ANNOUNCEMENTS (always visible) ═══ */}
-      <section className="pt-6 px-4 relative z-10">
-        <div className="container mx-auto max-w-6xl"><Announcements /></div>
-      </section>
 
       {showMore && <section className="py-6 px-4 relative z-10">
         <div className="container mx-auto max-w-6xl"><AnimatedHeroBanner /></div>
