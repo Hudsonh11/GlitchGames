@@ -6,3 +6,8 @@
 
 # Featured pick
 - [x] Rotate the hero through Block Blast, Fruit Slice, Geometry Dash, Pac-Man and Snake every 5 seconds.
+
+# News box
+- [x] Remove the announcements/news box from the home page entirely and delete its component.
+- [ ] Optional: remove the admin CMS "News" publishing tab now that nothing displays it (awaiting owner's call).
+
