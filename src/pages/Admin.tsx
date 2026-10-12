@@ -5,7 +5,7 @@ import {
   Power, PowerOff, Search, Shield, UserX, UserCheck,
   RefreshCw, BarChart3, Activity, Clock, TrendingUp,
   Eye, Database, Coins, Gem, Award, Flag, FileText,
-  Bell, Megaphone, Lock, Unlock, Mail, Download, Upload,
+  Bell, Lock, Unlock, Mail, Download, Upload,
   Filter, ArrowUpDown, ChevronDown, CheckCircle, XCircle,
   Zap, Globe, Server, Cpu, HardDrive, Settings, PieChart
 } from 'lucide-react';
@@ -20,7 +20,6 @@ import AdminWelcome from '@/components/AdminWelcome';
 import AdminStats from '@/components/AdminStats';
 import AdminUserActions from '@/components/AdminUserActions';
 import AdminAnalytics from '@/components/AdminAnalytics';
-import AdminCMS from '@/components/AdminCMS';
 import AdminUserDetail from '@/components/AdminUserDetail';
 import AdminInsights from '@/components/AdminInsights';
 import AdminPower from '@/components/AdminPower';
@@ -226,9 +225,6 @@ const Admin: React.FC = () => {
               <TabsTrigger value="gameconfig" className="gap-1.5 text-xs">
                 <Settings className="w-3.5 h-3.5" /> Game Config
               </TabsTrigger>
-              <TabsTrigger value="cms" className="gap-1.5 text-xs">
-                <Megaphone className="w-3.5 h-3.5" /> CMS
-              </TabsTrigger>
               <TabsTrigger value="bulk" className="gap-1.5 text-xs">
                 <Zap className="w-3.5 h-3.5" /> Bulk
               </TabsTrigger>
@@ -263,11 +259,6 @@ const Admin: React.FC = () => {
             {/* ═══ Analytics Tab ═══ */}
             <TabsContent value="analytics">
               <AdminAnalytics />
-            </TabsContent>
-
-            {/* ═══ CMS Tab ═══ */}
-            <TabsContent value="cms">
-              <AdminCMS />
             </TabsContent>
 
             {/* ═══ Overview Tab ═══ */}
