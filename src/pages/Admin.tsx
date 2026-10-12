@@ -5,7 +5,7 @@ import {
   Power, PowerOff, Search, Shield, UserX, UserCheck,
   RefreshCw, BarChart3, Activity, Clock, TrendingUp,
   Eye, Database, Coins, Gem, Award, Flag, FileText,
-  Bell, Megaphone, Lock, Unlock, Mail, Download, Upload,
+  Bell, Lock, Unlock, Mail, Download, Upload,
   Filter, ArrowUpDown, ChevronDown, CheckCircle, XCircle,
   Zap, Globe, Server, Cpu, HardDrive, Settings, PieChart
 } from 'lucide-react';
@@ -20,7 +20,6 @@ import AdminWelcome from '@/components/AdminWelcome';
 import AdminStats from '@/components/AdminStats';
 import AdminUserActions from '@/components/AdminUserActions';
 import AdminAnalytics from '@/components/AdminAnalytics';
-import AdminCMS from '@/components/AdminCMS';
 import AdminUserDetail from '@/components/AdminUserDetail';
 import AdminInsights from '@/components/AdminInsights';
 import AdminPower from '@/components/AdminPower';
