@@ -205,6 +205,9 @@ const games = [
   { id: 'cup-shuffle', title: 'Cup Shuffle', description: 'Track the golden ball as the cups swap faster and faster every round. NEW!', image: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&h=300&fit=crop', category: 'Skill', rating: 4.6, players: 'NEW', color: 'hsl(45, 100%, 55%)' },
   { id: 'ring-ball', title: 'Ring Ball', description: 'Steer a black hole around a neon ring and swallow splitting balls for huge combos. NEW!', image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&h=300&fit=crop', category: 'Arcade', rating: 4.9, players: 'NEW', color: 'hsl(300, 100%, 60%)' },
   { id: 'bomb-defuse', title: 'Bomb Defuse', description: 'Read the manual and cut the one safe wire before the timer hits zero. NEW!', image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&h=300&fit=crop', category: 'Brain', rating: 4.8, players: 'NEW', color: 'hsl(0, 85%, 55%)' },
+  { id: 'code-breaker', title: 'Code Breaker', description: 'Crack the secret 4-colour code in 10 guesses using logic clues. NEW!', image: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=400&h=300&fit=crop', category: 'Brain', rating: 4.7, players: 'NEW', color: 'hsl(210, 90%, 55%)' },
+  { id: 'orbit-dodge', title: 'Orbit Dodge', description: 'Swap between two orbits with one tap and dodge the incoming meteors. NEW!', image: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=400&h=300&fit=crop', category: 'Arcade', rating: 4.8, players: 'NEW', color: 'hsl(260, 90%, 60%)' },
+  { id: 'speed-sort', title: 'Speed Sort', description: 'Sort fruit and veg as fast as you can in 30 seconds. Wrong answers cost time! NEW!', image: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=400&h=300&fit=crop', category: 'Skill', rating: 4.6, players: 'NEW', color: 'hsl(140, 70%, 50%)' },
 ];
 
 const categories = ['All', ...Array.from(new Set(games.map(g => g.category))).sort()];
