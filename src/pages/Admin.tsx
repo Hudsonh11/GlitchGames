@@ -226,9 +226,6 @@ const Admin: React.FC = () => {
               <TabsTrigger value="gameconfig" className="gap-1.5 text-xs">
                 <Settings className="w-3.5 h-3.5" /> Game Config
               </TabsTrigger>
-              <TabsTrigger value="cms" className="gap-1.5 text-xs">
-                <Megaphone className="w-3.5 h-3.5" /> CMS
-              </TabsTrigger>
               <TabsTrigger value="bulk" className="gap-1.5 text-xs">
                 <Zap className="w-3.5 h-3.5" /> Bulk
               </TabsTrigger>
@@ -263,11 +260,6 @@ const Admin: React.FC = () => {
             {/* ═══ Analytics Tab ═══ */}
             <TabsContent value="analytics">
               <AdminAnalytics />
-            </TabsContent>
-
-            {/* ═══ CMS Tab ═══ */}
-            <TabsContent value="cms">
-              <AdminCMS />
             </TabsContent>
 
             {/* ═══ Overview Tab ═══ */}
