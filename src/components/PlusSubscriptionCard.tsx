@@ -211,7 +211,7 @@ const PlusSubscriptionCard: React.FC<Props> = ({ status }) => {
           {loading ? (
             <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Redirecting…</>
           ) : (
-            <><Zap className="w-4 h-4 mr-2" /> Get Glitch Games Plus — £7.99</>
+            <><Zap className="w-4 h-4 mr-2" /> {isAdmin ? 'Activate Plus (Admin — free)' : 'Subscribe — £5.99/month'}</>
           )}
         </Button>
       )}

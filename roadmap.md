@@ -11,4 +11,4 @@
 - [x] Remove the announcements/news box from the home page entirely and delete its component.
 - [ ] Optional: remove the admin CMS "News" publishing tab now that nothing displays it (awaiting owner's call).
 
-- [ ] Admins get Plus free: Subscribe skips Stripe, shows processing + celebration
+- [x] Admins get Plus free: Subscribe skips Stripe, shows processing + celebration

@@ -7,7 +7,7 @@ import UltraBadge from '@/components/UltraBadge';
 
 const changelog = [
   { version: '3.0.0', date: 'Jun 2026', type: 'feature' as const, items: [
-    'Glitch Games Plus subscription (£7.99/mo, one-time, no auto-renew)',
+    'Glitch Games Plus subscription (£5.99/mo, auto-renews)',
     'Plus perks: 2× XP, weekly loot crate, bonus coins, exclusive title/border, early access, and more',
     'Admin gifting & revocation tools for Plus subscriptions',
     'New games: Find Match, Guess The Person (Plus-only), Crash It',
