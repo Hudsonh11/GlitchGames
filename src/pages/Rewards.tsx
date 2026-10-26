@@ -21,6 +21,7 @@ import PlusSubscriptionCard from '@/components/PlusSubscriptionCard';
 import { usePlusStatus } from '@/hooks/usePlusStatus';
 import { supabase } from '@/integrations/supabase/client';
 import { getCurrentSeason } from '@/lib/season';
+import PaymentProcessingOverlay, { type PaymentPhase } from '@/components/PaymentProcessingOverlay';
 
 const generateReward = (day: number) => {
   const cycle = Math.floor((day - 1) / 7);
@@ -45,29 +46,34 @@ const Rewards: React.FC = () => {
   const currentSeason = useMemo(() => getCurrentSeason(), []);
   const plusStatus = usePlusStatus(user?.id);
 
-  // Verify Plus checkout return (?plus=success&session_id=...)
+  const [payPhase, setPayPhase] = useState<PaymentPhase | null>(null);
+
+  // Plus checkout return (?plus=success[&session_id=...]) shows the processing screen;
+  // otherwise silently sync auto-renewals.
   React.useEffect(() => {
     if (!user?.id) return;
-    if (searchParams.get('plus') !== 'success') return;
+    const returning = searchParams.get('plus') === 'success';
     const sessionId = searchParams.get('session_id');
-    if (!sessionId) return;
+    if (returning) setPayPhase('processing');
     (async () => {
-      try {
-        const { data, error } = await supabase.functions.invoke('verify-plus-purchase', {
-          body: { session_id: sessionId },
-        });
-        if (!error && data?.ok) {
-          setShowConfetti(true);
-          setTimeout(() => setShowConfetti(false), 4000);
-          toast({
-            title: '⚡ Glitch Games Plus Activated!',
-            description: 'Enjoy 30 days of Plus perks — coins, gems, battle pass, and more!',
+      const started = Date.now();
+      let ok = false;
+      // Retry a few times — Stripe can take a moment to mark the payment paid.
+      for (let attempt = 0; attempt < (returning ? 6 : 1); attempt++) {
+        try {
+          const { data, error } = await supabase.functions.invoke('verify-plus-purchase', {
+            body: sessionId ? { session_id: sessionId } : {},
           });
-          plusStatus.refresh();
+          if (!error && data?.ok) { ok = true; break; }
+        } catch (e) {
+          console.error('verify-plus-purchase failed', e);
         }
-      } catch (e) {
-        console.error('verify-plus-purchase failed', e);
+        if (returning) await new Promise((r) => setTimeout(r, 2500));
       }
+      if (ok) plusStatus.refresh();
+      if (!returning) return;
+      const wait = Math.max(0, 2500 - (Date.now() - started));
+      setTimeout(() => setPayPhase(ok ? 'success' : 'failed'), wait);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, searchParams]);
