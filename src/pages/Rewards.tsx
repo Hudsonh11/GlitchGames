@@ -254,6 +254,12 @@ const Rewards: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background relative">
+      {payPhase && (
+        <PaymentProcessingOverlay
+          phase={payPhase}
+          onClose={() => { setPayPhase(null); window.history.replaceState({}, '', '/rewards'); }}
+        />
+      )}
       <Seo
         title="Daily Rewards & Battle Pass — Glitch Games"
         description="Claim your daily login rewards, complete quests, and unlock battle pass tiers. Earn coins, gems, and exclusive cosmetics on Glitch Games."

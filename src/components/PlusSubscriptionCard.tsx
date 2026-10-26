@@ -6,6 +6,9 @@ import { useToast } from '@/hooks/use-toast';
 import UltraCard from './UltraCard';
 import UltraBadge from './UltraBadge';
 import { PlusStatus } from '@/hooks/usePlusStatus';
+import plusIcon from '@/assets/glitch-plus-icon.png.asset.json';
+
+const PLUS_PAYMENT_LINK = 'https://buy.stripe.com/fZu00kgw43jj45dgZFgbm09';
 
 interface Props {
   status: PlusStatus;
@@ -63,20 +66,17 @@ const PlusSubscriptionCard: React.FC<Props> = ({ status }) => {
 
   const startCheckout = async () => {
     setLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('create-plus-checkout', {
-        body: { returnUrl: window.location.origin },
-      });
-      if (error) throw error;
-      if (data?.url) window.location.href = data.url;
-    } catch (e) {
-      toast({
-        title: 'Checkout failed',
-        description: (e as Error).message,
-        variant: 'destructive',
-      });
+    const { data } = await supabase.auth.getUser();
+    const u = data.user;
+    if (!u) {
+      toast({ title: 'Please sign in first', variant: 'destructive' });
       setLoading(false);
+      return;
     }
+    const url = new URL(PLUS_PAYMENT_LINK);
+    url.searchParams.set('client_reference_id', u.id);
+    if (u.email) url.searchParams.set('prefilled_email', u.email);
+    window.location.href = url.toString();
   };
 
   const claimLoot = async () => {
@@ -124,9 +124,7 @@ const PlusSubscriptionCard: React.FC<Props> = ({ status }) => {
 
       <div className="flex items-start justify-between gap-4 mb-4 flex-wrap">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary via-secondary to-warning flex items-center justify-center shrink-0 shadow-neon-cyan">
-            <Zap className="w-8 h-8 text-primary-foreground" />
-          </div>
+          <img src={plusIcon.url} alt="Glitch Games Plus" className="w-14 h-14 rounded-2xl object-cover shrink-0 shadow-neon-cyan" />
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <h3 className="font-display text-xl sm:text-2xl font-bold text-gradient truncate">
@@ -137,13 +135,13 @@ const PlusSubscriptionCard: React.FC<Props> = ({ status }) => {
               )}
             </div>
             <p className="text-sm text-muted-foreground">
-              £7.99 / month · One-time purchase · No auto-renew
+              £5.99 / month · Renews automatically · Cancel anytime
             </p>
           </div>
         </div>
         {status.isActive && (
           <div className="text-right shrink-0">
-            <p className="text-xs text-muted-foreground">Time left</p>
+            <p className="text-xs text-muted-foreground">Renews in</p>
             <p className="font-display text-lg font-bold">
               {status.daysRemaining} day{status.daysRemaining === 1 ? '' : 's'}
             </p>
@@ -151,20 +149,10 @@ const PlusSubscriptionCard: React.FC<Props> = ({ status }) => {
         )}
       </div>
 
-      {renewalSoon && (
-        <div className="mb-4 p-3 rounded-xl bg-warning/20 border border-warning/40 flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-warning shrink-0" />
-          <p className="text-sm">
-            <strong>Plus expires in {status.daysRemaining} day{status.daysRemaining === 1 ? '' : 's'}!</strong>{' '}
-            Re-purchase to keep your benefits — it won't renew automatically.
-          </p>
-        </div>
-      )}
-
       {!status.isActive && (
         <p className="text-sm text-muted-foreground mb-4">
-          One-time monthly purchase. When the month ends you'll get a reminder — re-purchase
-          to keep your perks, otherwise all benefits stop until you buy again.
+          Monthly subscription that renews automatically. You get fresh coins and gems every
+          month, and you can cancel anytime — perks stay until the end of the paid month.
         </p>
       )}
 
