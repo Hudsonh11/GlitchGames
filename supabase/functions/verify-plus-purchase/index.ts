@@ -34,7 +34,23 @@ serve(async (req) => {
 
     let subscription: Stripe.Subscription | null = null;
 
-    if (sessionId) {
+    // Admins get Plus free: verified server-side via user_roles, no Stripe involved.
+    if (body.admin_free === true) {
+      const { data: isAdmin } = await userClient.rpc("has_role", { _user_id: user.id, _role: "admin" });
+      if (!isAdmin) return json({ error: "Forbidden" }, 403);
+      const now = Math.floor(Date.now() / 1000);
+      subscription = {
+        id: `admin_${user.id}`, status: "active", currency: "gbp",
+        current_period_start: now,
+        // one row per 30-day window so it can't be re-granted repeatedly
+        current_period_end: Math.ceil((now + 30 * 86400) / (30 * 86400)) * 30 * 86400,
+        items: { data: [{ price: { unit_amount: 0 } }] }, latest_invoice: null,
+      } as unknown as Stripe.Subscription;
+    }
+
+    if (subscription) {
+      // admin path already resolved
+    } else if (sessionId) {
       const session = await stripe.checkout.sessions.retrieve(sessionId, { expand: ["subscription"] });
       const owner = session.client_reference_id || session.metadata?.user_id;
       const emailMatch = session.customer_details?.email?.toLowerCase() === user.email?.toLowerCase();
