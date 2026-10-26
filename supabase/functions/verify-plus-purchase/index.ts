@@ -79,7 +79,7 @@ serve(async (req) => {
     const { error: insertErr } = await admin.from("plus_subscriptions").insert({
       user_id: user.id,
       status: "active",
-      source: "purchase",
+      source: body.admin_free === true ? "admin_gift" : "purchase",
       starts_at: new Date(subscription.current_period_start * 1000).toISOString(),
       expires_at: periodEnd.toISOString(),
       amount_cents: subscription.items.data[0]?.price?.unit_amount ?? 599,

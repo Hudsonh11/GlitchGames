@@ -7,6 +7,7 @@ import UltraCard from './UltraCard';
 import UltraBadge from './UltraBadge';
 import { PlusStatus } from '@/hooks/usePlusStatus';
 import plusIcon from '@/assets/glitch-plus-icon.png.asset.json';
+import { useGame } from '@/contexts/GameContext';
 
 const PLUS_PAYMENT_LINK = 'https://buy.stripe.com/fZu00kgw43jj45dgZFgbm09';
 
@@ -43,6 +44,8 @@ function startOfWeekISO() {
 
 const PlusSubscriptionCard: React.FC<Props> = ({ status }) => {
   const { toast } = useToast();
+  const { user: gameUser } = useGame();
+  const isAdmin = !!gameUser?.isAdmin;
   const [loading, setLoading] = useState(false);
   const [claimingLoot, setClaimingLoot] = useState(false);
   const [lootClaimed, setLootClaimed] = useState(false);
@@ -66,6 +69,11 @@ const PlusSubscriptionCard: React.FC<Props> = ({ status }) => {
 
   const startCheckout = async () => {
     setLoading(true);
+    if (isAdmin) {
+      // Admins skip Stripe: go straight to the processing + celebration flow.
+      window.location.href = '/rewards?plus=success&admin=1';
+      return;
+    }
     const { data } = await supabase.auth.getUser();
     const u = data.user;
     if (!u) {
