@@ -1,8 +1,7 @@
-// Verifies a Stripe checkout session for Glitch Games Plus, then grants:
-//   - 30 days of Plus
-//   - 2,000 coins + 100 gems
-//   - Premium Battle Pass for current season
-// Idempotent via UNIQUE(stripe_session_id) on plus_subscriptions.
+// Glitch Games Plus — £5.99/month auto-renewing Stripe subscription (via Payment Link).
+// Called with { session_id } after checkout, or with {} to sync renewals.
+// Each paid billing period gets one plus_subscriptions row (keyed by subscription + period end),
+// which grants 30-day access + 2,000 coins + 100 gems + Premium Battle Pass once per period.
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0?target=deno";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -29,38 +28,48 @@ serve(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const sessionId = String(body.session_id || "").trim();
-    if (!sessionId.startsWith("cs_")) return json({ error: "Invalid session_id" }, 400);
+    if (sessionId && !sessionId.startsWith("cs_")) return json({ error: "Invalid session_id" }, 400);
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", {
-      apiVersion: "2023-10-16",
-    });
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", { apiVersion: "2023-10-16" });
 
-    const paid = session.payment_status === "paid";
-    const sessionUserId = session.metadata?.user_id;
-    const product = session.metadata?.product;
-    if (!paid || sessionUserId !== user.id || product !== "glitch_games_plus") {
-      return json({ ok: false, paid, reason: "not_paid_or_mismatched" }, 200);
+    let subscription: Stripe.Subscription | null = null;
+
+    if (sessionId) {
+      const session = await stripe.checkout.sessions.retrieve(sessionId, { expand: ["subscription"] });
+      const owner = session.client_reference_id || session.metadata?.user_id;
+      const emailMatch = session.customer_details?.email?.toLowerCase() === user.email?.toLowerCase();
+      if (session.payment_status !== "paid" || (owner !== user.id && !(owner == null && emailMatch))) {
+        return json({ ok: false, reason: "not_paid_or_mismatched" }, 200);
+      }
+      subscription = session.subscription as Stripe.Subscription | null;
+    } else if (user.email) {
+      // Renewal sync: find an active subscription for this email.
+      const customers = await stripe.customers.list({ email: user.email, limit: 5 });
+      for (const c of customers.data) {
+        const subs = await stripe.subscriptions.list({ customer: c.id, status: "active", limit: 5 });
+        if (subs.data.length) { subscription = subs.data[0]; break; }
+      }
     }
 
-    const admin = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-    );
+    if (!subscription || !["active", "trialing"].includes(subscription.status)) {
+      return json({ ok: false, reason: "no_active_subscription" }, 200);
+    }
 
-    const startsAt = new Date();
-    const expiresAt = new Date(startsAt.getTime() + 30 * 24 * 60 * 60 * 1000);
+    const periodEnd = new Date(subscription.current_period_end * 1000);
+    const periodKey = `sub_${subscription.id}_${subscription.current_period_end}`;
+
+    const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
     const { error: insertErr } = await admin.from("plus_subscriptions").insert({
       user_id: user.id,
       status: "active",
       source: "purchase",
-      starts_at: startsAt.toISOString(),
-      expires_at: expiresAt.toISOString(),
-      amount_cents: session.amount_total ?? 799,
-      currency: session.currency ?? "gbp",
-      stripe_session_id: session.id,
-      stripe_payment_id: (session.payment_intent as string) || null,
+      starts_at: new Date(subscription.current_period_start * 1000).toISOString(),
+      expires_at: periodEnd.toISOString(),
+      amount_cents: subscription.items.data[0]?.price?.unit_amount ?? 599,
+      currency: subscription.currency ?? "gbp",
+      stripe_session_id: periodKey,
+      stripe_payment_id: (subscription.latest_invoice as string) || null,
     });
 
     if (insertErr && (insertErr as { code?: string }).code !== "23505") {
@@ -68,10 +77,9 @@ serve(async (req) => {
       return json({ error: "Failed to record" }, 500);
     }
 
-    // Only grant currency / battle pass / cosmetics on the first insert.
-    if (!insertErr) {
-      const { data: profile } = await admin.from("profiles")
-        .select("coins, gems").eq("user_id", user.id).single();
+    const isNewPeriod = !insertErr;
+    if (isNewPeriod) {
+      const { data: profile } = await admin.from("profiles").select("coins, gems").eq("user_id", user.id).single();
       if (profile) {
         await admin.from("profiles").update({
           coins: (profile.coins ?? 0) + 2000,
@@ -79,33 +87,18 @@ serve(async (req) => {
           priority_support: true,
         }).eq("user_id", user.id);
       }
-
-      // Battle pass for current season (idempotent on unique session id).
       await admin.from("battle_pass_purchases").insert({
-        user_id: user.id,
-        season: "season_1",
-        status: "completed",
-        amount_cents: 0,
-        currency: "gbp",
-        stripe_session_id: `plus_${session.id}`,
+        user_id: user.id, season: "season_1", status: "completed",
+        amount_cents: 0, currency: "gbp", stripe_session_id: `plus_${periodKey}`,
       });
-
-      // Exclusive Plus title + border (idempotent: ignore conflicts).
-      await admin.from("player_titles").insert({
-        user_id: user.id, title_id: "plus_member", equipped: false,
-      });
-      await admin.from("player_borders").insert({
-        user_id: user.id, border_id: "plus_animated", equipped: false,
-      });
-
+      await admin.from("player_titles").insert({ user_id: user.id, title_id: "plus_member", equipped: false });
+      await admin.from("player_borders").insert({ user_id: user.id, border_id: "plus_animated", equipped: false });
       await admin.from("activity_feed").insert({
-        user_id: user.id,
-        activity_type: "purchase",
-        content: "Joined Glitch Games Plus! ⚡",
+        user_id: user.id, activity_type: "purchase", content: "Joined Glitch Games Plus! ⚡",
       });
     }
 
-    return json({ ok: true, expires_at: expiresAt.toISOString() }, 200);
+    return json({ ok: true, new_period: isNewPeriod, expires_at: periodEnd.toISOString() }, 200);
   } catch (err) {
     console.error("verify-plus-purchase error", err);
     return json({ error: (err as Error).message }, 500);
