@@ -49,7 +49,7 @@ const PaymentProcessingOverlay: React.FC<Props> = ({ phase, onClose }) => {
   const title = phase === 'processing' ? 'Processing Payment' : phase === 'failed' ? 'Payment not confirmed yet' : stage === 'tick' ? 'Payment complete' : theme.title;
   return (
     <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="payment-title" tabIndex={-1}
-      className={`payment-overlay fixed inset-0 z-[100] flex flex-col items-center justify-center gap-7 bg-background/90 p-6 backdrop-blur-xl outline-none ${exiting ? 'payment-exiting' : ''}`}
+      className={`payment-overlay fixed inset-0 z-[150] flex flex-col items-center justify-center gap-7 bg-background/90 p-6 backdrop-blur-xl outline-none ${exiting ? 'payment-exiting' : ''}`}
       data-payment-stage={phase === 'success' ? stage : phase}
       onKeyDown={(event) => {
         if (event.key === 'Escape' && phase === 'failed') closeRef.current();
