@@ -16,4 +16,4 @@
 # Circular payment animation
 - [x] Replace the payment card with circular loading, tick and seasonal vector character scenes.
 - [x] Automatically dismiss after the three-second tick and three-second character event.
-- [ ] Verify timing, seasonal selection and the signed-in admin return flow.
+- [x] Verify timing, seasonal selection and signed-in admin return animation on desktop/mobile; real Stripe checkout was not exercised.
