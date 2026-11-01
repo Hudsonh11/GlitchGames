@@ -22,3 +22,4 @@
 - [x] Securely replace and validate the Stripe account connection.
 - [ ] Replace the old Plus payment link with authenticated recurring checkout.
 - [ ] Restrict Plus verification to the correct paid product and verify checkout creation.
+- [ ] Completely remove Battle Pass purchasing, rewards, admin controls and references.
