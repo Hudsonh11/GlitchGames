@@ -26,7 +26,7 @@ const STEPS: Step[] = [
   {
     icon: Coins,
     title: 'Earn Coins & Gems',
-    body: 'Every game you play earns coins. Spend them on cosmetics, titles, and avatar borders in the shop. Premium rewards drop in the Battle Pass.',
+    body: 'Every game you play earns coins. Spend them on cosmetics, titles, and avatar borders in the shop. Plus members get extra monthly rewards.',
   },
   {
     icon: Trophy,

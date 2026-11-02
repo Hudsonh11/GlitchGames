@@ -18,7 +18,6 @@ interface Props {
 const PERKS = [
   { icon: Coins,     color: 'text-warning',   text: '2,000 coins on activation' },
   { icon: Gem,       color: 'text-secondary', text: '100 gems on activation' },
-  { icon: Crown,     color: 'text-warning',   text: 'Premium Battle Pass unlocked' },
   { icon: Sparkles,  color: 'text-primary',   text: 'Access to Plus-exclusive games' },
   { icon: Zap,       color: 'text-success',   text: '2× XP boost on every game' },
   { icon: Gift,      color: 'text-secondary', text: 'Weekly loot crate (1,000 coins + 25 gems)' },

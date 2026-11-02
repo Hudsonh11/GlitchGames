@@ -9,7 +9,7 @@ const SITE_KNOWLEDGE = `You are Pixel, a friendly and expert support assistant f
 
 ## GLITCH GAMES PLUS (Premium Subscription)
 - Price: £5.99 / month, auto-renewing subscription. Cancel anytime; perks last until the end of the paid month. Each renewal adds 2,000 coins + 100 gems.
-- Benefits: 2,000 coins + 100 gems on activation, Premium Battle Pass unlocked, access to Plus-exclusive games (e.g. Guess The Person), 2× XP boost on every game, 25% bonus coins on wins, weekly loot crate (1,000 coins + 25 gems), exclusive "Plus" title + animated border, free weekly Streak Freeze refill, priority support flag, exclusive Plus avatar frame, ability to skip daily-reward cooldown once a week, ranked leaderboard Plus highlight + season badge, and early access to new games.
+- Benefits: 2,000 coins + 100 gems on activation, access to Plus-exclusive games (e.g. Guess The Person), 2× XP boost on every game, 25% bonus coins on wins, weekly loot crate (1,000 coins + 25 gems), exclusive "Plus" title + animated border, free weekly Streak Freeze refill, priority support flag, exclusive Plus avatar frame, ability to skip daily-reward cooldown once a week, ranked leaderboard Plus highlight + season badge, and early access to new games.
 - Admins can gift Plus to any user, and can also revoke a user's Plus subscription. Purchases never show as "Admin Gifted".
 - Buy or manage on the Rewards page.
 

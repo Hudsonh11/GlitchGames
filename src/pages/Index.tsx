@@ -32,7 +32,6 @@ import RecentWinners from '@/components/RecentWinners';
 import DailyQuests from '@/components/DailyQuests';
 import WeeklyChallenge from '@/components/WeeklyChallenge';
 import AchievementShowcase from '@/components/AchievementShowcase';
-import SeasonPass from '@/components/SeasonPass';
 import FriendActivityFeed from '@/components/FriendActivityFeed';
 import QuickStats from '@/components/QuickStats';
 import SearchGames from '@/components/SearchGames';
@@ -710,7 +709,6 @@ const Index: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <DailyQuests />
             <WeeklyChallenge />
-            <SeasonPass currentTier={3} currentXP={750} xpPerTier={1000} isPremium={false} seasonName={`Season ${__SEASON__.index}: ${__SEASON__.name}`} daysLeft={__SEASON__.daysLeft} />
           </div>
         </div>
       </section>
