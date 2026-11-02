@@ -9,8 +9,6 @@ import { PlusStatus } from '@/hooks/usePlusStatus';
 import plusIcon from '@/assets/glitch-plus-icon.png.asset.json';
 import { useGame } from '@/contexts/GameContext';
 
-const PLUS_PAYMENT_LINK = 'https://buy.stripe.com/fZu00kgw43jj45dgZFgbm09';
-
 interface Props {
   status: PlusStatus;
 }
@@ -73,17 +71,17 @@ const PlusSubscriptionCard: React.FC<Props> = ({ status }) => {
       window.location.href = '/rewards?plus=success&admin=1';
       return;
     }
-    const { data } = await supabase.auth.getUser();
-    const u = data.user;
-    if (!u) {
-      toast({ title: 'Please sign in first', variant: 'destructive' });
+    const { data, error } = await supabase.functions.invoke('create-plus-checkout', {
+      body: { returnUrl: window.location.origin },
+    });
+    if (error || !data?.url) {
+      let msg = data?.error;
+      try { msg = msg || (await (error as any)?.context?.json?.())?.error; } catch { /* ignore */ }
+      toast({ title: 'Could not start checkout', description: msg || 'Please sign in and try again.', variant: 'destructive' });
       setLoading(false);
       return;
     }
-    const url = new URL(PLUS_PAYMENT_LINK);
-    url.searchParams.set('client_reference_id', u.id);
-    if (u.email) url.searchParams.set('prefilled_email', u.email);
-    window.location.href = url.toString();
+    window.location.href = data.url;
   };
 
   const claimLoot = async () => {
