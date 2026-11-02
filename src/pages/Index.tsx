@@ -53,8 +53,6 @@ import RecommendedForYou from '@/components/RecommendedForYou';
 import DailyGoal from '@/components/DailyGoal';
 import { useGame } from '@/contexts/GameContext';
 import { Progress } from '@/components/ui/progress';
-import { getCurrentSeason } from '@/lib/season';
-const __SEASON__ = getCurrentSeason();
 
 // The five games the homepage hero rotates through, one every 5 seconds.
 const featuredPicks = [

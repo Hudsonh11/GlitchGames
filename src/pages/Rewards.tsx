@@ -19,7 +19,6 @@ import PrestigeSystem from '@/components/PrestigeSystem';
 import PlusSubscriptionCard from '@/components/PlusSubscriptionCard';
 import { usePlusStatus } from '@/hooks/usePlusStatus';
 import { supabase } from '@/integrations/supabase/client';
-import { getCurrentSeason } from '@/lib/season';
 import PaymentProcessingOverlay, { type PaymentPhase } from '@/components/PaymentProcessingOverlay';
 
 const generateReward = (day: number) => {
@@ -40,9 +39,7 @@ const Rewards: React.FC = () => {
   const { isLoggedIn, isLoading, claimDailyReward, currentStreak, lastClaimDate, coins, gems, user, gameStats, achievements } = useGame();
   const { toast } = useToast();
   const [showConfetti, setShowConfetti] = useState(false);
-  const [isPremium, setIsPremium] = useState(false);
   const [searchParams] = useSearchParams();
-  const currentSeason = useMemo(() => getCurrentSeason(), []);
   const plusStatus = usePlusStatus(user?.id);
 
   const [payPhase, setPayPhase] = useState<PaymentPhase | null>(null);
