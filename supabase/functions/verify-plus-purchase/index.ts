@@ -1,7 +1,7 @@
 // Glitch Games Plus — £5.99/month auto-renewing Stripe subscription (via Payment Link).
 // Called with { session_id } after checkout, or with {} to sync renewals.
 // Each paid billing period gets one plus_subscriptions row (keyed by subscription + period end),
-// which grants 30-day access + 2,000 coins + 100 gems + Premium Battle Pass once per period.
+// which grants 30-day access + 2,000 coins + 100 gems once per period.
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0?target=deno";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -57,13 +57,17 @@ serve(async (req) => {
       if (session.payment_status !== "paid" || (owner !== user.id && !(owner == null && emailMatch))) {
         return json({ ok: false, reason: "not_paid_or_mismatched" }, 200);
       }
+      if (session.metadata?.product !== "glitch_games_plus" || session.mode !== "subscription") {
+        return json({ ok: false, reason: "not_plus_checkout" }, 200);
+      }
       subscription = session.subscription as Stripe.Subscription | null;
     } else if (user.email) {
       // Renewal sync: find an active subscription for this email.
       const customers = await stripe.customers.list({ email: user.email, limit: 5 });
       for (const c of customers.data) {
-        const subs = await stripe.subscriptions.list({ customer: c.id, status: "active", limit: 5 });
-        if (subs.data.length) { subscription = subs.data[0]; break; }
+        const subs = await stripe.subscriptions.list({ customer: c.id, status: "active", limit: 10 });
+        const plus = subs.data.find((s) => s.metadata?.product === "glitch_games_plus");
+        if (plus) { subscription = plus; break; }
       }
     }
 
@@ -103,10 +107,6 @@ serve(async (req) => {
           priority_support: true,
         }).eq("user_id", user.id);
       }
-      await admin.from("battle_pass_purchases").insert({
-        user_id: user.id, season: "season_1", status: "completed",
-        amount_cents: 0, currency: "gbp", stripe_session_id: `plus_${periodKey}`,
-      });
       await admin.from("player_titles").insert({ user_id: user.id, title_id: "plus_member", equipped: false });
       await admin.from("player_borders").insert({ user_id: user.id, border_id: "plus_animated", equipped: false });
       await admin.from("activity_feed").insert({

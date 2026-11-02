@@ -72,10 +72,6 @@ const AdminPower: React.FC = () => {
 
   useEffect(() => { loadAudit(); }, []);
 
-  const matchedUsers = grantQuery.length >= 2
-    ? allUsers.filter(u => u.username.toLowerCase().includes(grantQuery.toLowerCase())).slice(0, 5)
-    : [];
-
   const matchedPlusUsers = plusQuery.length >= 2
     ? allUsers.filter(u => u.username.toLowerCase().includes(plusQuery.toLowerCase())).slice(0, 5)
     : [];
