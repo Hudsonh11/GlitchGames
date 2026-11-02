@@ -29,6 +29,13 @@
       "when": 1791787882669,
       "tag": "0003_harden_function_execute",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793605210995,
+      "tag": "0004_deprecate_battle_pass",
+      "breakpoints": true
     }
   ]
 }
