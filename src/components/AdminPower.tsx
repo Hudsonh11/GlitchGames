@@ -32,11 +32,6 @@ const AdminPower: React.FC = () => {
   const { user, allUsers } = useGame();
   const { toast } = useToast();
 
-  // Battle pass grant
-  const [grantQuery, setGrantQuery] = useState('');
-  const [grantTarget, setGrantTarget] = useState<ProfileLite | null>(null);
-  const [grantLoading, setGrantLoading] = useState(false);
-
   // Plus gift
   const [plusQuery, setPlusQuery] = useState('');
   const [plusTarget, setPlusTarget] = useState<ProfileLite | null>(null);
@@ -59,11 +54,6 @@ const AdminPower: React.FC = () => {
   const [bcTitle, setBcTitle] = useState('');
   const [bcContent, setBcContent] = useState('');
   const [bcSending, setBcSending] = useState(false);
-
-  // Reset Battle Pass
-  const [resetUsername, setResetUsername] = useState('');
-  const [resetLoading, setResetLoading] = useState(false);
-  const [resetAllLoading, setResetAllLoading] = useState(false);
 
   // Audit log
   const [audit, setAudit] = useState<AuditEntry[]>([]);
@@ -169,29 +159,6 @@ const AdminPower: React.FC = () => {
     }
   };
 
-  const grantBattlePass = async () => {
-    if (!grantTarget || !user?.id) return;
-    setGrantLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('admin-grant-pass', {
-        body: { target_user_id: grantTarget.user_id, season: 'season_1' },
-      });
-      if (error) throw error;
-      toast({
-        title: data?.already_had ? 'Already had pass' : 'Battle Pass Granted',
-        description: `${grantTarget.username} now has Premium.`,
-      });
-      setGrantTarget(null);
-      setGrantQuery('');
-      loadAudit();
-    } catch (e) {
-      console.error(e);
-      toast({ title: 'Grant failed', description: (e as Error).message, variant: 'destructive' });
-    } finally {
-      setGrantLoading(false);
-    }
-  };
-
   const sendBroadcast = async () => {
     if (!bcTitle.trim() || !bcContent.trim() || !user?.id) return;
     setBcSending(true);
@@ -221,47 +188,7 @@ const AdminPower: React.FC = () => {
     }
   };
 
-  const revokeOne = async () => {
-    if (!resetUsername.trim()) return;
-    setResetLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('admin-reset-pass', {
-        body: { username: resetUsername.trim(), season: 'season_1' },
-      });
-      if (error) throw error;
-      toast({
-        title: data?.revoked > 0 ? 'Battle Pass Revoked' : 'Nothing to revoke',
-        description: data?.revoked > 0
-          ? `Removed Premium from ${resetUsername.trim()}.`
-          : `${resetUsername.trim()} did not have Premium.`,
-      });
-      setResetUsername('');
-      loadAudit();
-    } catch (e) {
-      toast({ title: 'Revoke failed', description: (e as Error).message, variant: 'destructive' });
-    } finally {
-      setResetLoading(false);
-    }
-  };
 
-  const revokeAll = async () => {
-    setResetAllLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('admin-reset-pass', {
-        body: { all: true, season: 'season_1' },
-      });
-      if (error) throw error;
-      toast({
-        title: 'All Battle Passes Reset',
-        description: `Removed Premium from ${data?.revoked ?? 0} player(s).`,
-      });
-      loadAudit();
-    } catch (e) {
-      toast({ title: 'Reset failed', description: (e as Error).message, variant: 'destructive' });
-    } finally {
-      setResetAllLoading(false);
-    }
-  };
 
   const adminName = (id: string) => allUsers.find(u => u.id === id)?.username || id.slice(0, 8);
 
@@ -305,45 +232,6 @@ const AdminPower: React.FC = () => {
           Give me infinite coins & gems
         </Button>
       </UltraCard>
-      {/* Battle Pass Grant */}
-      <UltraCard variant="glass" className="p-5">
-        <div className="flex items-center gap-2 mb-4">
-          <Crown className="w-5 h-5 text-warning" />
-          <h3 className="font-display text-lg font-bold">Grant Battle Pass</h3>
-        </div>
-        <p className="text-xs text-muted-foreground mb-3">
-          Give a player Premium for free (compensation, contest reward, etc.). Idempotent — safe to retry.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by username…"
-              value={grantTarget?.username || grantQuery}
-              onChange={(e) => { setGrantTarget(null); setGrantQuery(e.target.value); }}
-              className="pl-9"
-            />
-            {matchedUsers.length > 0 && !grantTarget && (
-              <div className="absolute z-10 mt-1 w-full bg-popover border border-border rounded-lg shadow-lg overflow-hidden">
-                {matchedUsers.map(u => (
-                  <button
-                    key={u.id}
-                    onClick={() => setGrantTarget({ user_id: u.id, username: u.username })}
-                    className="w-full text-left px-3 py-2 hover:bg-accent text-sm"
-                  >
-                    {u.username}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <Button onClick={grantBattlePass} disabled={!grantTarget || grantLoading} variant="gaming">
-            {grantLoading ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Crown className="w-4 h-4 mr-1" />}
-            Grant
-          </Button>
-        </div>
-      </UltraCard>
-
       {/* Gift Glitch Games Plus */}
       <UltraCard variant="premium" glow className="p-5">
         <div className="flex items-center gap-2 mb-4">
@@ -351,7 +239,7 @@ const AdminPower: React.FC = () => {
           <h3 className="font-display text-lg font-bold">Gift Glitch Games Plus</h3>
         </div>
         <p className="text-xs text-muted-foreground mb-3">
-          Grant a player 1+ months of Plus (free). They get coins, gems, battle pass, and all Plus perks immediately.
+          Grant a player 1+ months of Plus (free). They get coins, gems and all Plus perks immediately.
         </p>
         <div className="flex flex-col sm:flex-row gap-2">
           <div className="relative flex-1">
@@ -509,67 +397,6 @@ const AdminPower: React.FC = () => {
         )}
       </UltraCard>
 
-
-      {/* Reset Battle Pass */}
-      <UltraCard variant="glass" className="p-5">
-        <div className="flex items-center gap-2 mb-4">
-          <Trash2 className="w-5 h-5 text-destructive" />
-          <h3 className="font-display text-lg font-bold">Reset Battle Pass</h3>
-        </div>
-        <p className="text-xs text-muted-foreground mb-3">
-          Remove Premium from a single player by username, or wipe Premium for everyone in the current season.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-2 mb-3">
-          <Input
-            placeholder="Username to revoke…"
-            value={resetUsername}
-            onChange={(e) => setResetUsername(e.target.value)}
-            className="flex-1"
-          />
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button disabled={!resetUsername.trim() || resetLoading} variant="destructive">
-                {resetLoading ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Trash2 className="w-4 h-4 mr-1" />}
-                Revoke
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Revoke Premium from {resetUsername.trim()}?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This removes their Premium Battle Pass for season_1. They can repurchase or be re-granted later.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={revokeOne}>Revoke</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="destructive" size="sm" disabled={resetAllLoading} className="w-full">
-              {resetAllLoading ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <AlertTriangle className="w-4 h-4 mr-1" />}
-              Reset Premium for ALL Players
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Reset everyone's Battle Pass?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Removes Premium from every player for season_1. Paid users will need to repurchase. This cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={revokeAll} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                Yes, reset all
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      </UltraCard>
 
       {/* Broadcast */}
       <UltraCard variant="glass" className="p-5">
