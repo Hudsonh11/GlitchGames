@@ -24,7 +24,7 @@ const AdminInsights: React.FC = () => {
         supabase.from('game_stats').select('game_id, games_played, high_score'),
         supabase.from('bug_reports').select('id, status'),
         supabase.from('activity_feed').select('*').order('created_at', { ascending: false }).limit(15),
-        supabase.from('battle_pass_purchases').select('amount_cents').eq('status', 'completed'),
+        supabase.from('plus_subscriptions').select('amount_cents').eq('source', 'purchase'),
       ]);
 
       const profiles = profilesRes.data ?? [];

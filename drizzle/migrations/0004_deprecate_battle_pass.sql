@@ -1,0 +1,1 @@
+COMMENT ON TABLE public.battle_pass_purchases IS 'DEPRECATED: Battle Pass removed; no longer used.';

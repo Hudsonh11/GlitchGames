@@ -12,7 +12,6 @@ const changelog = [
     'Admin gifting & revocation tools for Plus subscriptions',
     'New games: Find Match, Guess The Person (Plus-only), Crash It',
     'Pixel AI upgraded to Gemini 3 Flash Lite with expanded site knowledge',
-    'Battle Pass line-item now reflects the current season dynamically',
     'Streak Freeze rebuilt as a real one-shot shield per 7-day tier',
     'More push-notification triggers across daily rewards, friends, and Plus',
   ] },

@@ -32,7 +32,6 @@ import RecentWinners from '@/components/RecentWinners';
 import DailyQuests from '@/components/DailyQuests';
 import WeeklyChallenge from '@/components/WeeklyChallenge';
 import AchievementShowcase from '@/components/AchievementShowcase';
-import SeasonPass from '@/components/SeasonPass';
 import FriendActivityFeed from '@/components/FriendActivityFeed';
 import QuickStats from '@/components/QuickStats';
 import SearchGames from '@/components/SearchGames';
@@ -54,8 +53,6 @@ import RecommendedForYou from '@/components/RecommendedForYou';
 import DailyGoal from '@/components/DailyGoal';
 import { useGame } from '@/contexts/GameContext';
 import { Progress } from '@/components/ui/progress';
-import { getCurrentSeason } from '@/lib/season';
-const __SEASON__ = getCurrentSeason();
 
 // The five games the homepage hero rotates through, one every 5 seconds.
 const featuredPicks = [
@@ -710,7 +707,6 @@ const Index: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <DailyQuests />
             <WeeklyChallenge />
-            <SeasonPass currentTier={3} currentXP={750} xpPerTier={1000} isPremium={false} seasonName={`Season ${__SEASON__.index}: ${__SEASON__.name}`} daysLeft={__SEASON__.daysLeft} />
           </div>
         </div>
       </section>

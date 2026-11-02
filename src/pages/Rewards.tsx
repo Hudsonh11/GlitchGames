@@ -12,7 +12,6 @@ import UltraProgressBar from '@/components/UltraProgressBar';
 import UltraBadge from '@/components/UltraBadge';
 import UltraConfetti from '@/components/UltraConfetti';
 import UltraLoadingSpinner from '@/components/UltraLoadingSpinner';
-import SeasonPass from '@/components/SeasonPass';
 import MilestoneTracker from '@/components/MilestoneTracker';
 import StreakFreezeShield from '@/components/StreakFreezeShield';
 import QuestSystem from '@/components/QuestSystem';
@@ -20,7 +19,6 @@ import PrestigeSystem from '@/components/PrestigeSystem';
 import PlusSubscriptionCard from '@/components/PlusSubscriptionCard';
 import { usePlusStatus } from '@/hooks/usePlusStatus';
 import { supabase } from '@/integrations/supabase/client';
-import { getCurrentSeason } from '@/lib/season';
 import PaymentProcessingOverlay, { type PaymentPhase } from '@/components/PaymentProcessingOverlay';
 
 const generateReward = (day: number) => {
@@ -41,9 +39,7 @@ const Rewards: React.FC = () => {
   const { isLoggedIn, isLoading, claimDailyReward, currentStreak, lastClaimDate, coins, gems, user, gameStats, achievements } = useGame();
   const { toast } = useToast();
   const [showConfetti, setShowConfetti] = useState(false);
-  const [isPremium, setIsPremium] = useState(false);
   const [searchParams] = useSearchParams();
-  const currentSeason = useMemo(() => getCurrentSeason(), []);
   const plusStatus = usePlusStatus(user?.id);
 
   const [payPhase, setPayPhase] = useState<PaymentPhase | null>(null);
@@ -77,126 +73,6 @@ const Rewards: React.FC = () => {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, searchParams]);
-
-  // Verify premium status from server. When returning from Stripe checkout
-  // (?purchase=success&session_id=cs_...) we hit the `verify-purchase` edge
-  // function, which asks Stripe directly whether the session was paid and
-  // grants the pass via the service role. The DB has UNIQUE(stripe_session_id)
-  // so retries / replays cannot grant twice.
-  React.useEffect(() => {
-    if (!user?.id) return;
-    let cancelled = false;
-    const justPurchased = searchParams.get('purchase') === 'success';
-    const sessionId = searchParams.get('session_id');
-
-    const checkExistingPurchase = async () => {
-      const { data } = await supabase
-        .from('battle_pass_purchases')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('season', currentSeason.key)
-        .eq('status', 'completed')
-        .maybeSingle();
-      if (cancelled) return;
-      setIsPremium(!!data);
-      return !!data;
-    };
-
-    const run = async () => {
-      // Always read current state first.
-      const owned = await checkExistingPurchase();
-
-      // Only attempt to verify a payment if Stripe redirected with a session id.
-      // Without it, no amount of URL tampering can grant the pass.
-      if (justPurchased && sessionId) {
-        try {
-          const { data, error } = await supabase.functions.invoke('verify-purchase', {
-            body: { session_id: sessionId },
-          });
-          if (cancelled) return;
-
-          if (!error && data?.ok) {
-            setIsPremium(true);
-            setShowConfetti(true);
-            setTimeout(() => setShowConfetti(false), 4000);
-            toast({
-              title: '🎉 Premium Unlocked!',
-              description: 'Welcome to the Premium Battle Pass! Enjoy your exclusive rewards + 1000 coins & 50 gems bonus!',
-            });
-          } else if (!owned) {
-            toast({
-              title: 'Payment not confirmed',
-              description: 'We could not verify your purchase. If you completed payment, please refresh in a moment.',
-              variant: 'destructive',
-            });
-          }
-        } catch (e) {
-          console.error('verify-purchase failed', e);
-        }
-      } else if (justPurchased && !sessionId && !owned) {
-        // Someone tried to spoof success without a real session id.
-        toast({
-          title: 'Invalid checkout return',
-          description: 'No valid payment session was provided.',
-          variant: 'destructive',
-        });
-      }
-    };
-
-    run();
-    return () => { cancelled = true; };
-  }, [user?.id, searchParams]);
-
-  // Realtime: when a Battle Pass is granted to this user (by Stripe webhook OR
-  // by an admin via admin-grant-pass), flip the UI to Premium instantly and
-  // notify them with a celebratory toast — no refresh required.
-  React.useEffect(() => {
-    if (!user?.id) return;
-    const channel = supabase
-      .channel(`bp-purchases-${user.id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'battle_pass_purchases',
-          filter: `user_id=eq.${user.id}`,
-        },
-        (payload) => {
-          const row = payload.new as { status?: string; amount_cents?: number };
-          if (row?.status !== 'completed') return;
-          setIsPremium(true);
-          setShowConfetti(true);
-          setTimeout(() => setShowConfetti(false), 4000);
-          const wasGift = (row.amount_cents ?? 0) === 0;
-          toast({
-            title: wasGift ? '🎁 Premium Battle Pass Granted!' : '🎉 Premium Unlocked!',
-            description: wasGift
-              ? 'An admin gifted you the Premium Battle Pass. All exclusive rewards are now unlocked!'
-              : 'Welcome to Premium! Enjoy your exclusive rewards.',
-          });
-        },
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'DELETE',
-          schema: 'public',
-          table: 'battle_pass_purchases',
-          filter: `user_id=eq.${user.id}`,
-        },
-        () => {
-          setIsPremium(false);
-          toast({
-            title: 'Battle Pass Removed',
-            description: 'Your Premium Battle Pass has been reset by an admin.',
-            variant: 'destructive',
-          });
-        },
-      )
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [user?.id, toast]);
 
   const today = new Date().toISOString().split('T')[0];
   const canClaim = lastClaimDate !== today;
@@ -261,8 +137,8 @@ const Rewards: React.FC = () => {
         />
       )}
       <Seo
-        title="Daily Rewards & Battle Pass — Glitch Games"
-        description="Claim your daily login rewards, complete quests, and unlock battle pass tiers. Earn coins, gems, and exclusive cosmetics on Glitch Games."
+        title="Daily Rewards & Plus — Glitch Games"
+        description="Claim your daily login rewards, complete quests, and unlock Glitch Games Plus. Earn coins, gems, and exclusive cosmetics on Glitch Games."
         path="/rewards"
       />
       <Navbar />
@@ -390,15 +266,7 @@ const Rewards: React.FC = () => {
             <PlusSubscriptionCard status={plusStatus} />
           </div>
 
-          {/* Season Pass */}
-          <SeasonPass
-            currentTier={Math.floor(totalGamesPlayed / 5) + 1}
-            currentXP={(user?.xp || 0) % 500}
-            xpPerTier={500}
-            isPremium={isPremium || plusStatus.isActive}
-            seasonName={`Season ${currentSeason.index}: ${currentSeason.name}`}
-            daysLeft={currentSeason.daysLeft}
-          />
+
 
         </div>
       </div>

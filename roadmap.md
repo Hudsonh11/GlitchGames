@@ -20,6 +20,7 @@
 
 # New Stripe account
 - [x] Securely replace and validate the Stripe account connection.
-- [ ] Replace the old Plus payment link with authenticated recurring checkout.
-- [ ] Restrict Plus verification to the correct paid product and verify checkout creation.
-- [ ] Completely remove Battle Pass purchasing, rewards, admin controls and references.
+- [x] Replace the old Plus payment link with authenticated recurring checkout.
+- [x] Restrict Plus verification to the Plus product.
+- [ ] Verify live checkout creation (blocked: stored Stripe key is expired).
+- [x] Completely remove Battle Pass purchasing, rewards, admin controls and references.
