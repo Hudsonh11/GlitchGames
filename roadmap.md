@@ -22,5 +22,5 @@
 - [x] Securely replace and validate the Stripe account connection.
 - [x] Replace the old Plus payment link with authenticated recurring checkout.
 - [x] Restrict Plus verification to the Plus product.
-- [ ] Verify live checkout creation (blocked: stored Stripe key is expired).
+- [x] Verify live checkout creation.
 - [x] Completely remove Battle Pass purchasing, rewards, admin controls and references.
