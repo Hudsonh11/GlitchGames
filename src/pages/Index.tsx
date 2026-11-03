@@ -34,7 +34,6 @@ import WeeklyChallenge from '@/components/WeeklyChallenge';
 import AchievementShowcase from '@/components/AchievementShowcase';
 import FriendActivityFeed from '@/components/FriendActivityFeed';
 import QuickStats from '@/components/QuickStats';
-import SearchGames from '@/components/SearchGames';
 import AnimatedHeroBanner from '@/components/AnimatedHeroBanner';
 import Countdown from '@/components/Countdown';
 import MilestoneTracker from '@/components/MilestoneTracker';
@@ -45,7 +44,6 @@ import QuickPlayCarousel from '@/components/QuickPlayCarousel';
 import PlayerTestimonials from '@/components/PlayerTestimonials';
 import GenreSpotlight from '@/components/GenreSpotlight';
 import GamingNews from '@/components/GamingNews';
-import QuickAccessBar from '@/components/QuickAccessBar';
 import StaffPicks from '@/components/StaffPicks';
 import DailyBonus from '@/components/DailyBonus';
 import ContinuePlaying from '@/components/ContinuePlaying';
@@ -482,10 +480,9 @@ const Index: React.FC = () => {
       <section className="px-4 border-b border-border/60">
         <div className="container mx-auto flex flex-wrap items-center justify-between gap-4">
           <div><p className="font-display font-semibold text-lg">{isLoggedIn && user ? `Welcome back, ${user.username}` : 'Your next favourite starts here'}</p><p className="text-xs text-muted-foreground mt-1">Arcade classics, new challenges, and a little friendly competition.</p></div>
-          <div className="flex items-center gap-3"><QuickPlayButton games={games} isLoggedIn={isLoggedIn} /><Button variant="ghost" asChild><Link to="/leaderboard"><Trophy />Rankings</Link></Button></div>
+          <QuickPlayButton games={games} isLoggedIn={isLoggedIn} />
         </div>
       </section>
-      <section className="px-4"><div className="container mx-auto"><QuickAccessBar /></div></section>
 
 
       {showMore && <section className="py-6 px-4 relative z-10">
@@ -544,7 +541,6 @@ const Index: React.FC = () => {
             </div>
             <div className="space-y-6">
               <Countdown targetDate={eventDate} title="🎉 Weekend Tournament" subtitle="Double XP for all players!" />
-              <SearchGames games={games.map(g => ({ id: g.id, title: g.title, category: g.category, rating: g.rating, color: g.color }))} />
               <GenreSpotlight games={games} />
             </div>
           </div>
@@ -645,18 +641,9 @@ const Index: React.FC = () => {
 
       {/* ═══ ALL GAMES LIBRARY ═══ */}
       <section id="games" className="py-16 px-4 relative">
-        <UltraParticles count={15} className="opacity-50" />
+        <UltraParticles count={8} className="opacity-30" />
         <div className="container mx-auto max-w-6xl relative z-10">
-          <SectionHeader icon={Gamepad2} title="Game Library" subtitle={`${games.length} games available — choose your adventure!`}
-            action={isLoggedIn && (
-              <Link to="/rewards">
-                <Button variant="gold" size="lg" className="gap-2 group">
-                  <Gift className="w-5 h-5 transition-transform group-hover:rotate-12" />
-                  Daily Rewards
-                  {hasReward && <span className="ml-1 px-2 py-0.5 rounded-full bg-foreground/20 text-xs animate-pulse">NEW</span>}
-                </Button>
-              </Link>
-            )} />
+          <SectionHeader icon={Gamepad2} title="Game Library" subtitle={`${games.length} games available — choose your adventure!`} />
 
           {/* Category Tabs */}
           <div className="flex gap-2 mb-6 overflow-x-auto pb-3 scrollbar-hide">
@@ -699,8 +686,8 @@ const Index: React.FC = () => {
         </div>
       </section>
 
-      {/* ═══ QUESTS + CHALLENGES + SEASON PASS ═══ */}
-      <section className="py-12 px-4 relative z-10 overflow-hidden">
+      {/* ═══ QUESTS + CHALLENGES ═══ */}
+      {showMore && <section className="py-12 px-4 relative z-10 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-card/30 to-transparent" />
         <div className="container mx-auto max-w-6xl relative z-10">
           <SectionHeader icon={Target} title="Quests & Challenges" subtitle="Complete objectives to earn bonus rewards" iconColor="text-accent" />
@@ -709,10 +696,10 @@ const Index: React.FC = () => {
             <WeeklyChallenge />
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* ═══ ACHIEVEMENTS + MILESTONES ═══ */}
-      <section className="py-12 px-4 relative z-10">
+      {showMore && <section className="py-12 px-4 relative z-10">
         <div className="container mx-auto max-w-6xl">
           <SectionHeader icon={Trophy} title="Achievements & Milestones" subtitle="Track your gaming journey" iconColor="text-warning" />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -720,7 +707,7 @@ const Index: React.FC = () => {
             <MilestoneTracker milestones={milestones} title="Your Progress" />
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* ═══ PLAYER TESTIMONIALS ═══ */}
       {showMore && <section className="py-12 px-4 relative z-10">
@@ -731,7 +718,7 @@ const Index: React.FC = () => {
       </section>}
 
       {/* ═══ SOCIAL - FRIEND ACTIVITY + STATS ═══ */}
-      {isLoggedIn && (
+      {isLoggedIn && showMore && (
         <section className="py-12 px-4 relative z-10">
           <div className="container mx-auto max-w-6xl">
             <SectionHeader icon={Users} title="Community" subtitle="See what your friends are up to" />
