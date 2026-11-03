@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Zap, Coins, Gem, Crown, Sparkles, Gift, Shield, Star, LifeBuoy, Loader2, Check, Palette, Award, Rocket, Trophy, Headphones } from 'lucide-react';
+import { Zap, Coins, Gem, Crown, Sparkles, Gift, Shield, Star, LifeBuoy, Loader2, Check, Palette, Award, Rocket, Trophy, Headphones, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -79,6 +79,22 @@ const PlusSubscriptionCard: React.FC<Props> = ({ status }) => {
       try { msg = msg || (await (error as any)?.context?.json?.())?.error; } catch { /* ignore */ }
       toast({ title: 'Could not start checkout', description: msg || 'Please sign in and try again.', variant: 'destructive' });
       setLoading(false);
+      return;
+    }
+    window.location.href = data.url;
+  };
+
+  const [portalLoading, setPortalLoading] = useState(false);
+  const openPortal = async () => {
+    setPortalLoading(true);
+    const { data, error } = await supabase.functions.invoke('plus-customer-portal', {
+      body: { returnUrl: window.location.origin },
+    });
+    if (error || !data?.url) {
+      let msg = data?.error;
+      try { msg = msg || (await (error as any)?.context?.json?.())?.error; } catch { /* ignore */ }
+      toast({ title: 'Could not open subscription settings', description: msg || 'Please try again.', variant: 'destructive' });
+      setPortalLoading(false);
       return;
     }
     window.location.href = data.url;
@@ -196,6 +212,13 @@ const PlusSubscriptionCard: React.FC<Props> = ({ status }) => {
           )}
         </Button>
       )}
+
+      {status.isActive && !isAdmin && (
+        <Button variant="ghost" size="sm" className="w-full mb-3" onClick={openPortal} disabled={portalLoading}>
+          {portalLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Opening…</> : <><Settings className="w-4 h-4 mr-2" /> Manage Subscription</>}
+        </Button>
+      )}
+
 
       {!status.isActive && (
         <Button
