@@ -34,7 +34,6 @@ import WeeklyChallenge from '@/components/WeeklyChallenge';
 import AchievementShowcase from '@/components/AchievementShowcase';
 import FriendActivityFeed from '@/components/FriendActivityFeed';
 import QuickStats from '@/components/QuickStats';
-import SearchGames from '@/components/SearchGames';
 import AnimatedHeroBanner from '@/components/AnimatedHeroBanner';
 import Countdown from '@/components/Countdown';
 import MilestoneTracker from '@/components/MilestoneTracker';
@@ -542,7 +541,6 @@ const Index: React.FC = () => {
             </div>
             <div className="space-y-6">
               <Countdown targetDate={eventDate} title="🎉 Weekend Tournament" subtitle="Double XP for all players!" />
-              <SearchGames games={games.map(g => ({ id: g.id, title: g.title, category: g.category, rating: g.rating, color: g.color }))} />
               <GenreSpotlight games={games} />
             </div>
           </div>
