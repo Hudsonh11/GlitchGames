@@ -45,7 +45,6 @@ import QuickPlayCarousel from '@/components/QuickPlayCarousel';
 import PlayerTestimonials from '@/components/PlayerTestimonials';
 import GenreSpotlight from '@/components/GenreSpotlight';
 import GamingNews from '@/components/GamingNews';
-import QuickAccessBar from '@/components/QuickAccessBar';
 import StaffPicks from '@/components/StaffPicks';
 import DailyBonus from '@/components/DailyBonus';
 import ContinuePlaying from '@/components/ContinuePlaying';
@@ -482,10 +481,9 @@ const Index: React.FC = () => {
       <section className="px-4 border-b border-border/60">
         <div className="container mx-auto flex flex-wrap items-center justify-between gap-4">
           <div><p className="font-display font-semibold text-lg">{isLoggedIn && user ? `Welcome back, ${user.username}` : 'Your next favourite starts here'}</p><p className="text-xs text-muted-foreground mt-1">Arcade classics, new challenges, and a little friendly competition.</p></div>
-          <div className="flex items-center gap-3"><QuickPlayButton games={games} isLoggedIn={isLoggedIn} /><Button variant="ghost" asChild><Link to="/leaderboard"><Trophy />Rankings</Link></Button></div>
+          <QuickPlayButton games={games} isLoggedIn={isLoggedIn} />
         </div>
       </section>
-      <section className="px-4"><div className="container mx-auto"><QuickAccessBar /></div></section>
 
 
       {showMore && <section className="py-6 px-4 relative z-10">
