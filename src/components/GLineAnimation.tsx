@@ -7,17 +7,20 @@ import { useEffect, useRef, useState } from "react";
  */
 
 const MODULE_WIDTH = 300;
-const MODULE_HEIGHT = 140;
+const MODULE_HEIGHT = 160;
 
-// One G module, 300 units wide, starting and ending on the y=60 baseline
-// with a horizontal tangent so copies tile seamlessly.
+// Trace the reference's broad rising shoulder, small upper turn and rounded
+// lower bowl. The inner bar doubles back onto the exit, as in the artwork.
+// Each module starts and ends on the same horizontal baseline.
 const modulePath = (ox: number, first: boolean) =>
-  `${first ? `M ${ox} 60 ` : ""}H ${ox + 55} ` +
-  `C ${ox + 95} 60 ${ox + 105} 15 ${ox + 160} 15 ` +
-  `C ${ox + 205} 15 ${ox + 215} 60 ${ox + 160} 60 ` +
-  `C ${ox + 112} 60 ${ox + 110} 120 ${ox + 160} 120 ` +
-  `C ${ox + 210} 120 ${ox + 207} 75 ${ox + 175} 75 ` +
-  `H ${ox + 230} C ${ox + 260} 75 ${ox + 270} 60 ${ox + 300} 60`;
+  `${first ? `M ${ox} 84 ` : ""}H ${ox + 40} ` +
+  `C ${ox + 102} 84 ${ox + 108} 22 ${ox + 181} 22 ` +
+  `C ${ox + 216} 22 ${ox + 222} 28 ${ox + 222} 39 ` +
+  `C ${ox + 222} 51 ${ox + 208} 54 ${ox + 185} 54 ` +
+  `C ${ox + 112} 54 ${ox + 106} 138 ${ox + 170} 138 ` +
+  `C ${ox + 208} 138 ${ox + 237} 111 ${ox + 237} 99 ` +
+  `C ${ox + 237} 87 ${ox + 227} 84 ${ox + 212} 84 ` +
+  `H ${ox + 170} H ${ox + MODULE_WIDTH}`;
 
 const GLineAnimation = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -30,11 +33,10 @@ const GLineAnimation = () => {
     if (!el) return;
     const ro = new ResizeObserver((entries) => {
       const w = entries[0]?.contentRect.width;
-      if (w && Math.abs(w - width) > 1) setWidth(w);
+      if (w) setWidth((previous) => Math.abs(w - previous) > 1 ? w : previous);
     });
     ro.observe(el);
     return () => ro.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Start the draw once when the section scrolls into view. Never restarts.
@@ -54,7 +56,7 @@ const GLineAnimation = () => {
     return () => io.disconnect();
   }, []);
 
-  const reps = Math.max(2, Math.ceil(width / MODULE_WIDTH) + 1);
+  const reps = Math.max(2, Math.round(width / MODULE_WIDTH));
   const path = Array.from({ length: reps }, (_, i) =>
     modulePath(i * MODULE_WIDTH, i === 0)
   ).join(" ");
@@ -79,8 +81,7 @@ const GLineAnimation = () => {
           d={path}
           pathLength={100}
           fill="none"
-          stroke="#087FFF"
-          strokeWidth={12}
+          strokeWidth={22}
           strokeLinecap="round"
           strokeLinejoin="round"
         />

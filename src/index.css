@@ -48,6 +48,7 @@
     --neon-purple: 280 100% 60%;
     --neon-gold: 45 100% 55%;
     --neon-green: 142 76% 50%;
+    --signature-blue: 211 100% 52%;
 
     /* ULTRA Premium Glassmorphism */
     --glass-bg: 240 15% 12% / 0.6;
@@ -956,8 +957,9 @@ h1, h2, h3, h4, h5, h6, .font-display { letter-spacing: 0; }
   padding: 0.75rem 0 1.25rem;
   line-height: 0;
 }
-.g-line svg { display: block; }
+.g-line svg { display: block; height: auto; }
 .g-line-path {
+  stroke: hsl(var(--signature-blue));
   stroke-dasharray: 100;
   stroke-dashoffset: 100;
 }
