@@ -948,3 +948,26 @@ h1, h2, h3, h4, h5, h6, .font-display { letter-spacing: 0; }
 }
 .reduce-motion .payment-check-path { stroke-dashoffset: 0; }
 .reduce-motion .payment-ripple { display: none; }
+
+/* Glitch Games signature looping-G line (bottom of every page) */
+.g-line {
+  width: 100%;
+  overflow: hidden;
+  padding: 0.75rem 0 1.25rem;
+  line-height: 0;
+}
+.g-line svg { display: block; }
+.g-line-path {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+}
+.g-line-started .g-line-path {
+  animation: g-line-draw var(--g-duration, 20s) linear forwards;
+}
+@keyframes g-line-draw {
+  to { stroke-dashoffset: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .g-line-path { stroke-dashoffset: 0; animation: none; }
+}
+.reduce-motion .g-line-path { stroke-dashoffset: 0; animation: none; }

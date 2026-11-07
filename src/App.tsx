@@ -28,6 +28,7 @@ import BackToTop from "@/components/BackToTop";
 import InstallPrompt from "@/components/InstallPrompt";
 import OnboardingTour from "@/components/OnboardingTour";
 import CommandPalette from "@/components/CommandPalette";
+import GLineAnimation from "@/components/GLineAnimation";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +61,7 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
+          <GLineAnimation />
           <SupportBot />
           <AgentHub />
           <CookieConsent />
