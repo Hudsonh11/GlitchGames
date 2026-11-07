@@ -81,7 +81,7 @@ const GLineAnimation = () => {
           d={path}
           pathLength={100}
           fill="none"
-          strokeWidth={22}
+          strokeWidth={19}
           strokeLinecap="round"
           strokeLinejoin="round"
         />
