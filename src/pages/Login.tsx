@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import GlitchLoader from "@/components/GlitchLoader";
 import { useNavigate, Link } from 'react-router-dom';
 import { Gamepad2, Mail, Lock, User, ArrowRight, KeyRound } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -96,7 +97,7 @@ const Login: React.FC = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        <GlitchLoader size="lg" slot="login-loader" />
       </div>
     );
   }
@@ -192,8 +193,11 @@ const Login: React.FC = () => {
               className="w-full"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Loading...' : (isLogin ? 'Sign In' : 'Create Account')}
-              <ArrowRight className="w-5 h-5 ml-2" />
+              {isSubmitting ? (
+                <GlitchLoader size="sm" slot="button" text={isLogin ? 'Logging in...' : 'Creating account...'} />
+              ) : (
+                <>{isLogin ? 'Sign In' : 'Create Account'}<ArrowRight className="w-5 h-5 ml-2" /></>
+              )}
             </Button>
           </form>
 

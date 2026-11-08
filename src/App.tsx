@@ -29,6 +29,8 @@ import InstallPrompt from "@/components/InstallPrompt";
 import OnboardingTour from "@/components/OnboardingTour";
 import CommandPalette from "@/components/CommandPalette";
 import GLineAnimation from "@/components/GLineAnimation";
+import PageMascot from "@/components/PageMascot";
+import BootLoader from "@/components/BootLoader";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +64,8 @@ const App = () => (
             </Routes>
           </main>
           <GLineAnimation />
+          <PageMascot />
+          <BootLoader />
           <SupportBot />
           <AgentHub />
           <CookieConsent />
