@@ -29,26 +29,42 @@ export const MASCOTS: Mascot[] = [
   { id: "cyber-radar", name: "Cyber Radar", kind: "lottie", load: () => import("@/assets/lottie/cyber-radar.json") },
   { id: "retro-ufo", name: "Retro UFO", kind: "lottie", load: () => import("@/assets/lottie/retro-ufo.json") },
   { id: "level-shield", name: "Level-Up Shield", kind: "lottie", load: () => import("@/assets/lottie/level-shield.json") },
+  { id: "spinning-coin", name: "Spinning Coin", kind: "lottie", load: () => import("@/assets/lottie/spinning-coin.json") },
+  { id: "cyber-gear", name: "Cyber Gear", kind: "lottie", load: () => import("@/assets/lottie/cyber-gear.json") },
+  { id: "lightning-bolt", name: "Lightning Bolt", kind: "lottie", load: () => import("@/assets/lottie/lightning-bolt.json") },
 ];
 
-/** Shuffled once per page load, so every refresh swaps which mascot sits in which slot. */
-let order: Mascot[] | null = null;
-const slots = new Map<string, Mascot>();
+const byId = (id: string) => MASCOTS.find((m) => m.id === id)!;
 
-export function shuffleMascots(list: Mascot[], rand: () => number = Math.random): Mascot[] {
-  const a = [...list];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(rand() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
+/** Every place has its own fixed animation, so it always shows up where it belongs. */
+export const SLOT_HOMES: Record<string, string> = {
+  "page:home": "ghost",
+  "page:login": "robot",
+  "page:profile": "pixel-cat",
+  "page:leaderboard": "trophy",
+  "page:rewards": "chest",
+  "page:settings": "cyber-gear",
+  "page:admin": "level-shield",
+  "page:recovery": "cyber-gem",
+  "page:reset-password": "heart",
+  "page:social": "retro-ufo",
+  "page:support": "cyber-radar",
+  "page:not-found": "portal",
+  boot: "arcade",
+  "page-loader": "lightning-bolt",
+  "login-loader": "robot",
+  button: "spinning-coin",
+  "button-mini": "spinning-coin",
+};
 
 export function mascotForSlot(slot: string): Mascot {
-  if (!order) order = shuffleMascots(MASCOTS);
-  const existing = slots.get(slot);
-  if (existing) return existing;
-  const m = order[slots.size % order.length];
-  slots.set(slot, m);
-  return m;
+  const id = SLOT_HOMES[slot] ?? SLOT_HOMES[slot.replace(/-mini$/, "")] ?? "gamepad";
+  return byId(id);
+}
+
+/** Start downloading a page's animation as early as possible. */
+export function preloadMascot(slot: string) {
+  const m = mascotForSlot(slot);
+  if (m.kind === "image") { const img = new Image(); img.src = m.src; }
+  else void m.load();
 }

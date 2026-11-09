@@ -24,3 +24,4 @@
 - [x] Restrict Plus verification to the Plus product.
 - [x] Verify live checkout creation.
 - [x] Completely remove Battle Pass purchasing, rewards, admin controls and references.
+- [x] Make extra custom animations and add them

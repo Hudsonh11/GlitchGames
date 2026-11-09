@@ -1,9 +1,8 @@
-import { forwardRef, lazy, Suspense, useEffect, useState, type ComponentType } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
+import lottie from "lottie-web/build/player/lottie_light";
 import { mascotForSlot } from "@/lib/mascotPool";
 import { cn } from "@/lib/utils";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const Lottie = lazy<ComponentType<any>>(() => import("lottie-react").then((m: any) => ({ default: m.default?.default ?? m.default ?? m.Lottie })));
 
 interface Props {
   slot: string;
@@ -27,14 +26,22 @@ const MascotAnimation = forwardRef<HTMLDivElement, Props>(({ slot, size = 120, c
   return (
     <div ref={ref} aria-hidden="true" className={cn("pointer-events-none select-none shrink-0", className)} style={{ width: size, height: size }}>
       {mascot.kind === "image" ? (
-        <img src={mascot.src} alt="" width={size} height={size} loading="eager" decoding="async" className="h-full w-full object-contain" draggable={false} />
+        <img src={mascot.src} alt="" width={size} height={size} loading="eager" decoding="async" fetchPriority="high" className="h-full w-full object-contain" draggable={false} />
       ) : data ? (
-        <Suspense fallback={null}>
-          <Lottie animationData={data} loop autoplay={!reduced} style={{ width: size, height: size }} />
-        </Suspense>
+        <LottieBox data={data} autoplay={!reduced} />
       ) : null}
     </div>
   );
 });
 MascotAnimation.displayName = "MascotAnimation";
 export default MascotAnimation;
+
+function LottieBox({ data, autoplay }: { data: object; autoplay: boolean }) {
+  const el = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    let anim: { destroy: () => void } | null = null;
+    if (el.current) anim = lottie.loadAnimation({ container: el.current, renderer: "svg", loop: true, autoplay, animationData: data });
+    return () => anim?.destroy();
+  }, [data, autoplay]);
+  return <div ref={el} className="h-full w-full" />;
+}

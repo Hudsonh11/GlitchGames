@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "asset_id": "05429954-4656-4328-b1e1-f191224dc5d8",
+  "asset_id": "6212d6c7-f6d8-490e-b2aa-ba2bc0633202",
   "project_id": "f307bed3-8d13-49a8-a5ab-50f8c5646410",
-  "url": "/__l5e/assets-v1/05429954-4656-4328-b1e1-f191224dc5d8/gamepad.webp",
-  "r2_key": "a/v1/f307bed3-8d13-49a8-a5ab-50f8c5646410/05429954-4656-4328-b1e1-f191224dc5d8/gamepad.webp",
-  "original_filename": "gamepad.webp",
-  "size": 1195000,
+  "url": "/__l5e/assets-v1/6212d6c7-f6d8-490e-b2aa-ba2bc0633202/gamepad-small.webp",
+  "r2_key": "a/v1/f307bed3-8d13-49a8-a5ab-50f8c5646410/6212d6c7-f6d8-490e-b2aa-ba2bc0633202/gamepad-small.webp",
+  "original_filename": "gamepad-small.webp",
+  "size": 309176,
   "content_type": "image/webp",
-  "created_at": "2026-11-08T19:27:52Z"
+  "created_at": "2026-11-09T19:21:21Z"
 }
